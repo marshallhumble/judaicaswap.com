@@ -1,0 +1,74 @@
+{{ define "title" }}Item {{ .Share.Title }}{{ end }} {{ define "main" }}
+<form
+        enctype="multipart/form-data"
+        action="/items/sendEmail/{{ .Share.ID }}"
+        method="POST"
+        novalidate
+>
+<!-- Include the CSRF token -->
+<input type="hidden" name="csrf_token" value="{{ .CSRFToken }}" />
+
+{{ if .IsAuthenticated }}
+  {{ with .Share }}
+    <div class="flex-container">
+      <div>
+        <a href="/items/view/{{.ID}}">{{.Title}}</a>
+      </div>
+      <div>
+        {{.Description}}
+      </div>
+      {{if .Picture1}}
+      <div>
+        <img
+                src="/static/SharePics/{{.Picture1}}"
+                alt="Image for {{.Title}}"
+                class="editPage"
+        />
+      </div>
+      {{end}}
+      {{if .Picture2}}
+        <div>
+          <img
+                  src="/static/SharePics/{{.Picture2}}"
+                  alt="Image for {{.Title}}"
+                  class="editPage"
+          />
+        </div>
+      {{end}}
+      {{if .Picture3}}
+        <div>
+          <img
+                  src="/static/SharePics/{{.Picture3}}"
+                  alt="Image for {{.Title}}"
+                  class="editPage"
+          />
+        </div>
+      {{end}}
+      {{if .Picture4}}
+        <div>
+          <img
+                  src="/static/SharePics/{{.Picture4}}"
+                  alt="Image for {{.Title}}"
+                  class="editPage"
+          />
+        </div>
+      {{end}}
+      {{if .Picture5}}
+        <div>
+          <img
+                  src="/static/SharePics/{{.Picture5}}"
+                  alt="Image for {{.Title}}"
+                  class="editPage"
+          />
+        </div>
+      {{end}}
+    </div>
+    <div>
+      <input type="submit" name="update" value="Send Email" />
+    </div>
+    </form>
+{{ end }}
+{{ else }}
+<h1>Must be logged in!</h1>
+{{ end }}
+{{ end }}

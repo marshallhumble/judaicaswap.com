@@ -1,0 +1,109 @@
+{{ define "title" }}Item {{ .Share.Title }}{{ end }} {{ define "main" }}
+<form
+  enctype="multipart/form-data"
+  action="/share/edit/{{ .Share.ID }}"
+  method="POST"
+  novalidate
+>
+  <!-- Include the CSRF token -->
+  <input type="hidden" name="csrf_token" value="{{ .CSRFToken }}" />
+
+  {{ if .IsAuthenticated }} {{ with .Share }}
+  <strong>{{ .Title }}</strong>
+  <legend>{{ .Title }}</legend>
+  <div>
+    <label for="itemName">
+      Name:
+      <input type="text" name="itemName" value="{{ .Title }}" />
+    </label>
+  </div>
+  <div>
+    <label for="description"
+      >Description:
+      <textarea name="description">{{ .Description }}</textarea>
+    </label>
+  </div>
+  {{ if .ShipsIntl }}
+  <div>
+    <label for="shipsIntl">
+      ShipsIntl:
+      <select id="shipsIntl" name="shipsIntl">
+        <option value="True" selected>Yes</option>
+        <option value="False">No</option>
+      </select>
+    </label>
+  </div>
+  {{ else }}
+  <div>
+    <label for="shipsIntl">
+      Willing to Ship International?:
+      <select id="shipsIntl" name="shipsIntl">
+        <option value="True">Yes</option>
+        <option value="False" selected>No</option>
+      </select>
+    </label>
+  </div>
+  {{ end }} {{ if .Available }}
+  <div>
+    <label for="avail">
+      Available?:
+      <select id="avail" name="avail">
+        <option value="True" selected>Yes</option>
+        <option value="False">No</option>
+      </select>
+    </label>
+  </div>
+  {{ else }}
+  <div>
+    <label for="avail">
+      Available?:
+      <select id="avail" name="avail">
+        <option value="True">Yes</option>
+        <option value="False" selected>No</option>
+      </select>
+    </label>
+  </div>
+  {{ end }} {{if .Picture1}}
+  <div>
+    Picture 1:
+    <img class="editPage" src="/static/SharePics/{{ .Picture1 }}" />
+  </div>
+  {{end}} {{if .Picture2}}
+  <div>
+    Picture 2:
+    <img class="editPage" src="/static/SharePics/{{ .Picture2 }}" />
+  </div>
+  {{end}} {{if .Picture3}}
+  <div>
+    Picture 3:
+    <img class="editPage" src="/static/SharePics/{{ .Picture3 }}" />
+  </div>
+  {{end}} {{if .Picture4}}
+  <div>
+    Picture 4:
+    <img class="editPage" src="/static/SharePics/{{ .Picture4 }}" />
+  </div>
+  {{end}} {{if .Picture5}}
+  <div>
+    Picture 5:
+    <img class="editPage" src="/static/SharePics/{{ .Picture5 }}" />
+  </div>
+
+  {{end}} {{ end }} {{ else }}
+  <h1>Must be logged in!</h1>
+  {{ end }}
+  <br />
+  <br />
+  <div>
+    <b>Limit 5, jpg or png only.</b>
+    <br />
+    {{ with .Form.FieldErrors.uploadFile }}
+    <label class="error">{{ . }}</label>
+    {{ end }}
+    <input type="file" name="uploadFile" multiple />
+    <div></div>
+    <input type="submit" value="Update Listing" />
+    <input type="submit" value="Delete" formaction="/items/delete/{{.Id}}" />
+  </div>
+</form>
+{{ end }}

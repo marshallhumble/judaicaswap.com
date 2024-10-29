@@ -1,0 +1,40 @@
+{{ define "nav" }}
+<nav>
+  <div class="logo">
+    <a href="/"
+      ><img
+        width="45"
+        height="40"
+        src="/static/images/icon.svg"
+        alt="Judaica Swap"
+    /></a>
+  </div>
+  <div class="links">
+    <ul class="navUL">
+      <!-- Toggle the link based on authentication status -->
+      {{ if .IsGuest }}
+      <li class="navLi"><a href="/">Home</a></li>
+      {{ end }} {{ if .IsUser }}
+      <li class="navLi"><a href="/items/create">Create listing</a></li>
+      <li class="navLi"><a href="/user/update/">Profile</a></li>
+      {{ end }} {{ if .IsAdmin }}
+      <li class="navLi"><a href="/items/create">Upload file</a></li>
+      <li class="navLi"><a href="/users/">Users</a></li>
+      {{ end }}
+    </ul>
+  </div>
+  <div class="navbutton">
+    <!-- Toggle the links based on authentication status -->
+    {{ if .IsAuthenticated }}
+    <form action="/user/logout" method="POST">
+      <!-- Include the CSRF token -->
+      <input type="hidden" name="csrf_token" value="{{ .CSRFToken }}" />
+      <button>Logout</button>
+    </form>
+    {{ else }}
+    <button id="signUp" class="navbtn">Signup</button>
+    <button id="logIn" class="navbtn">Login</button>
+    {{ end }}
+  </div>
+</nav>
+{{ end }}

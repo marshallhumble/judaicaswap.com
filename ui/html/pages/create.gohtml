@@ -1,0 +1,53 @@
+{{ define "title" }}Upload a New File{{ end }} {{ define "main" }}
+<form enctype="multipart/form-data" action="/items/create" method="POST">
+  <!-- Include the CSRF token -->
+  <input type="hidden" name="csrf_token" value="{{ .CSRFToken }}" />
+  <div>
+    <label>Item Name:</label>
+    {{ with .Form.FieldErrors.itemName }}
+    <label class="error">{{ . }}</label>
+    {{ end }}
+
+    <input type="text" name="itemName" value="{{ .Form.ItemName }}" />
+  </div>
+  <div>
+    {{ with .Form.FieldErrors.description }}
+    <label class="error">{{ . }}</label>
+    {{ end }}
+    <label for="description"
+      >Description:
+      <textarea name="description">{{ .Form.Description }}</textarea>
+    </label>
+  </div>
+  <div>
+    <label for="shipsIntl">
+      ShipsIntl:
+      <select id="shipsIntl" name="shipsIntl">
+        <option value="True">Yes</option>
+        <option value="False" selected>No</option>
+      </select>
+    </label>
+  </div>
+  <div>
+    <label for="expires">
+      When listing expires (in days):
+      <select id="expires" name="expires">
+        <option value="30" selected>30</option>
+        <option value="45">45</option>
+        <option value="60">60</option>
+        <option value="90">90</option>
+      </select>
+    </label>
+  </div>
+  <div>
+    <b>Limit 5, <i>jpg or png only.</i></b>
+    <br />
+    {{ with .Form.FieldErrors.uploadFile }}
+    <label class="error">{{ . }}</label>
+    {{ end }}
+    <input type="file" name="uploadFile" multiple />
+    <div></div>
+    <input type="submit" value="Create Listing" />
+  </div>
+</form>
+{{ end }}
