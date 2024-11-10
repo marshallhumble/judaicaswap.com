@@ -3,8 +3,8 @@ package models
 import (
 	"database/sql"
 	"errors"
-	"net/smtp"
-	"strconv"
+	"fmt"
+	"gopkg.in/gomail.v2"
 )
 
 type ServerConfigInterface interface {
@@ -46,25 +46,29 @@ func (m *ServerConfigModel) GetConfig() (ServerConfig, error) {
 	return c, nil
 }
 
-func (m *ServerConfigModel) SendMail(rEmail, sEmail, item string) error {
+func (m *ServerConfigModel) SendMail(rEmail, sEmail, itemURL string) error {
 
 	s, err := m.GetConfig()
+
 	if err != nil {
 		return err
 	}
-	server := s.mailServer + ":" + strconv.Itoa(s.mailPort)
-	auth := smtp.PlainAuth("", s.mailUsername, s.mailPassword, s.mailServer)
 
-	// Here we do it all: connect to our server, set up a message and send it
+	subject := "Email from JudaicaWebSwap about one of your items!"
+	body := fmt.Sprintf("Hi %s <br> <a href=\"mailto:%s\">%s</a> is interested in  your item on Judaica Swap! "+
+		"<br> <br><a href=%s>%s</a><br><br> "+
+		"Email them back at <a href=\"mailto:%s\">%s</a> <br>", rEmail, sEmail, sEmail, itemURL, itemURL, sEmail, sEmail)
 
-	to := []string{rEmail}
+	mail := gomail.NewMessage()
+	mail.SetHeader("From", s.mailUsername)
+	mail.SetHeader("To", rEmail)
+	mail.SetHeader("Subject", subject)
+	mail.SetBody("text/html", body)
 
-	MsgFile := []byte("To: " + rEmail + "\r\n" +
-		"Subject: Email from JudaicaWebSwap about one of your items \r\n" +
-		"\r\n" + sEmail + " wants to talk to you about " + item + " send an email to " + sEmail + " to " +
-		"work out details!\r\n")
+	d := gomail.NewDialer(s.mailServer, s.mailPort, s.mailUsername, s.mailPassword)
 
-	if err := smtp.SendMail(server, auth, s.mailUsername, to, MsgFile); err != nil {
+	// Send the email to Bob, Cora and Dan.
+	if err := d.DialAndSend(mail); err != nil {
 		return err
 	}
 
