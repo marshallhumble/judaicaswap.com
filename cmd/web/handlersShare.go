@@ -95,7 +95,7 @@ func (app *application) sendMail(w http.ResponseWriter, r *http.Request) {
 
 	email := app.Share.GetEmail(id)
 	sEmail := app.sessionManager.GetString(r.Context(), "authenticatedUserEmail")
-	itemURL := "http://localhost:4000/items/view/" + r.PathValue("id")
+	itemURL := "https://localhost:4000/items/view/" + r.PathValue("id")
 
 	if err := app.config.SendMail(email, sEmail, itemURL); err != nil {
 		app.serverError(w, r, err)
