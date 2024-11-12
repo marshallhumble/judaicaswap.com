@@ -33,11 +33,17 @@ li.navLi {
   display: inline;
 }
 
+a.navLi{
+  text-decoration: none;
+  padding: 15px;
+  display: block;
+  text-align: center;
+}
+
 ul.navUL {
   list-style-type: none;
-  display: flex;
-  text-align: left;
-  justify-content: center;
+  display: block;
+  text-align: center;
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -92,6 +98,7 @@ nav {
 nav a {
   margin-right: 1.5em;
   display: inline-block;
+  text-decoration: none;
 }
 
 nav form {
