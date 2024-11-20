@@ -133,3 +133,5 @@ go.work.sum
 .env
 /ui/static/SharePics/*.*
 /tls/*.*
+
+.aws/

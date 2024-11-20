@@ -156,6 +156,10 @@ func (app *application) shareCreatePost(w http.ResponseWriter, r *http.Request) 
 			f, _ := file.Open()
 			io.Copy(dst, f)
 
+			if err := app.uploadFileToS3(file.Filename); err != nil {
+				app.serverError(w, r, err)
+			}
+
 			switch key {
 			case 0:
 				form.Picture1 = file.Filename
@@ -188,6 +192,8 @@ func (app *application) shareCreatePost(w http.ResponseWriter, r *http.Request) 
 
 	owner := app.sessionManager.GetInt(r.Context(), "authenticatedUserID")
 	email := app.sessionManager.GetString(r.Context(), "authenticatedUserEmail")
+
+	//bucketName, keyName string, fileBody interface{})
 
 	//Insert(owner int, email, title, description, picture1, picture2, picture3, picture4,
 	//		picture5 string, ships, avail bool, expires int16) (int, error)

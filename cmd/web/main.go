@@ -1,11 +1,15 @@
 package main
 
 import (
+	"context"
 	"crypto/tls"
 	"database/sql"
 	"flag"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"html/template"
 	"io"
+	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -30,6 +34,8 @@ type application struct {
 	formDecoder    *form.Decoder
 	sessionManager *scs.SessionManager
 	config         models.ServerConfigInterface
+	S3Client       *s3.Client
+	S3Bucket       string
 }
 
 // MaxUploadSize defines the largest file that can be uploaded in the system
@@ -42,8 +48,15 @@ func main() {
 		AddSource: true,
 	}))
 
+	cfg, err := config.LoadDefaultConfig(context.TODO())
+	if err != nil {
+		log.Fatalf("unable to load SDK config, %v", err)
+	}
+
+	client := s3.NewFromConfig(cfg)
+
 	//Get the DB Details from the .env file, !TODO: change to OS Vars in prod
-	dbPass, dbUser, dbName, err := readFileEnvs(".env")
+	dbPass, dbUser, dbName, s3BucketName, err := readFileEnvs(".env")
 	if err != nil {
 		logger.Error(err.Error())
 		os.Exit(1)
@@ -82,6 +95,8 @@ func main() {
 		formDecoder:    formDecoder,
 		sessionManager: sessionManager,
 		config:         &models.ServerConfigModel{DB: db},
+		S3Client:       client,
+		S3Bucket:       s3BucketName,
 	}
 
 	tlsConfig := &tls.Config{
@@ -115,7 +130,7 @@ func main() {
 	os.Exit(1)
 }
 
-// openDB open the db and check if the tables exist, if not run first setup.
+// openDB open the db and check if the tables exist
 func openDB(dsn string) (*sql.DB, error) {
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
@@ -130,17 +145,17 @@ func openDB(dsn string) (*sql.DB, error) {
 	return db, nil
 }
 
-// readFileEnvs pull the database details from the .ENV file that we are using for Docker init
-func readFileEnvs(fileName string) (dbPass, dbUser, dbName string, err error) {
+// readFileEnvs pull the sensitive data details from the .ENV file that we are using for Docker init
+func readFileEnvs(fileName string) (dbPass, dbUser, dbName, s3bucket string, err error) {
 
 	file, err := os.Open(fileName)
 	if err != nil {
-		return "", "", "", err
+		return "", "", "", "", err
 	}
 
 	data, err := io.ReadAll(file)
 	if err != nil {
-		return "", "", "", err
+		return "", "", "", "", err
 	}
 
 	text := string(data)
@@ -148,14 +163,16 @@ func readFileEnvs(fileName string) (dbPass, dbUser, dbName string, err error) {
 	dbName = getVariable(text, "DB_DATABASE")
 	dbPass = getVariable(text, "DB_PASSWORD")
 	dbUser = getVariable(text, "DB_USERNAME")
+	s3bucket = getVariable(text, "S3BUCKET")
 
-	return dbPass, dbUser, dbName, nil
+	return dbPass, dbUser, dbName, s3bucket, nil
 }
 
 // getVariable get the variables from the ENV file, right now we are assuming they look like this:
 // DB_USERNAME=username
 // DB_PASSWORD=password
 // DB_DATABASE=db_name
+// S3BUCKET=s3bucketname
 func getVariable(text, key string) string {
 
 	lines := strings.Split(text, "\n")
