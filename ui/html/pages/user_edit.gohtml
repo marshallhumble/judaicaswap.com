@@ -32,27 +32,15 @@
           <input type="password" name="password" value="" />
         </label>
       </div>
-      <div
-        >Created:
-        {{ humanDate .Created }}</div
-      >
+      <div>Created: {{ humanDate .Created }}</div>
 
       <br />
 
       {{ if .Admin }}
-        <div>
-          Question 1:
-          {{.Question1}}
-        </div>
-        <div>
-          Question 2:
-          {{.Question1}}
-        </div>
-        <div>
-          Question 3:
-          {{.Question1}}
-        </div>
-          <br>
+      <div>Question 1: {{.Question1}}</div>
+      <div>Question 2: {{.Question1}}</div>
+      <div>Question 3: {{.Question1}}</div>
+      <br />
       <div>
         <label for="admin">
           Admin:

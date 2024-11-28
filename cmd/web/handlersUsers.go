@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -42,7 +43,11 @@ func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
 	var form userSignupForm
 
 	if err := app.decodePostForm(r, &form); err != nil {
-		app.clientError(w, http.StatusBadRequest)
+		fmt.Println(err)
+		data := app.newTemplateData(r)
+		data.Form = form
+		app.sessionManager.Put(r.Context(), "flash", "Error, please try again.")
+		app.render(w, r, http.StatusUnprocessableEntity, "signup.gohtml", data)
 		return
 	}
 
@@ -53,6 +58,9 @@ func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
 	form.CheckField(validator.NotBlank(form.Password), "password", "This field cannot be blank")
 	form.CheckField(validator.MinChars(form.Password, 12), "password",
 		"This field must be at least 12 characters long")
+	form.CheckField(validator.NotBlank(form.Question1), "question1", "This field cannot be blank")
+	form.CheckField(validator.NotBlank(form.Question2), "question2", "This field cannot be blank")
+	form.CheckField(validator.NotBlank(form.Question3), "question3", "This field cannot be blank")
 
 	if !form.Valid() {
 		data := app.newTemplateData(r)
@@ -99,6 +107,7 @@ func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
 
 	if err := app.decodePostForm(r, &form); err != nil {
 		app.clientError(w, http.StatusBadRequest)
+
 		return
 	}
 

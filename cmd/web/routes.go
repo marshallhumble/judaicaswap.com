@@ -17,7 +17,7 @@ func (app *application) routes() http.Handler {
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
 	//mux.Handle("GET /static/", http.FileServerFS(ui.Files))
 
-	//PING! PONG! used for testing
+	//PING? PONG! used for testing
 	mux.HandleFunc("GET /ping", ping)
 
 	//dynamic middleware route
