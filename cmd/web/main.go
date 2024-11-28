@@ -36,6 +36,7 @@ type application struct {
 	config         models.ServerConfigInterface
 	S3Client       *s3.Client
 	S3Bucket       string
+	S3Url          string
 }
 
 // MaxUploadSize defines the largest file that can be uploaded in the system
@@ -56,7 +57,7 @@ func main() {
 	client := s3.NewFromConfig(cfg)
 
 	//Get the DB Details from the .env file, !TODO: change to OS Vars in prod
-	dbPass, dbUser, dbName, s3BucketName, err := readFileEnvs(".env")
+	dbPass, dbUser, dbName, s3BucketName, s3UrlName, err := readFileEnvs(".env")
 	if err != nil {
 		logger.Error(err.Error())
 		os.Exit(1)
@@ -97,6 +98,7 @@ func main() {
 		config:         &models.ServerConfigModel{DB: db},
 		S3Client:       client,
 		S3Bucket:       s3BucketName,
+		S3Url:          s3UrlName,
 	}
 
 	tlsConfig := &tls.Config{
@@ -146,16 +148,16 @@ func openDB(dsn string) (*sql.DB, error) {
 }
 
 // readFileEnvs pull the sensitive data details from the .ENV file that we are using for Docker init
-func readFileEnvs(fileName string) (dbPass, dbUser, dbName, s3bucket string, err error) {
+func readFileEnvs(fileName string) (dbPass, dbUser, dbName, s3bucket, s3url string, err error) {
 
 	file, err := os.Open(fileName)
 	if err != nil {
-		return "", "", "", "", err
+		return "", "", "", "", "", err
 	}
 
 	data, err := io.ReadAll(file)
 	if err != nil {
-		return "", "", "", "", err
+		return "", "", "", "", "", err
 	}
 
 	text := string(data)
@@ -164,8 +166,9 @@ func readFileEnvs(fileName string) (dbPass, dbUser, dbName, s3bucket string, err
 	dbPass = getVariable(text, "DB_PASSWORD")
 	dbUser = getVariable(text, "DB_USERNAME")
 	s3bucket = getVariable(text, "S3BUCKET")
+	s3url = getVariable(text, "S3URL")
 
-	return dbPass, dbUser, dbName, s3bucket, nil
+	return dbPass, dbUser, dbName, s3bucket, s3url, nil
 }
 
 // getVariable get the variables from the ENV file, right now we are assuming they look like this:
@@ -173,6 +176,7 @@ func readFileEnvs(fileName string) (dbPass, dbUser, dbName, s3bucket string, err
 // DB_PASSWORD=password
 // DB_DATABASE=db_name
 // S3BUCKET=s3bucketname
+// S3URL=s3url
 func getVariable(text, key string) string {
 
 	lines := strings.Split(text, "\n")

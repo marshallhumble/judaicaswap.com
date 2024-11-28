@@ -66,27 +66,27 @@
   {{ end }} {{if .Picture1}}
   <div>
     Picture 1:
-    <img class="editPage" src="/static/SharePics/{{ .Picture1 }}" />
+    <img class="editPage" src="{{ .Picture1 }}" />
   </div>
   {{end}} {{if .Picture2}}
   <div>
     Picture 2:
-    <img class="editPage" src="/static/SharePics/{{ .Picture2 }}" />
+    <img class="editPage" src="{{ .Picture2 }}" />
   </div>
   {{end}} {{if .Picture3}}
   <div>
     Picture 3:
-    <img class="editPage" src="/static/SharePics/{{ .Picture3 }}" />
+    <img class="editPage" src="{{ .Picture3 }}" />
   </div>
   {{end}} {{if .Picture4}}
   <div>
     Picture 4:
-    <img class="editPage" src="/static/SharePics/{{ .Picture4 }}" />
+    <img class="editPage" src="{{ .Picture4 }}" />
   </div>
   {{end}} {{if .Picture5}}
   <div>
     Picture 5:
-    <img class="editPage" src="/static/SharePics/{{ .Picture5 }}" />
+    <img class="editPage" src="{{ .Picture5 }}" />
   </div>
 
   {{end}} {{ end }} {{ else }}
@@ -101,9 +101,9 @@
     <label class="error">{{ . }}</label>
     {{ end }}
     <input type="file" name="uploadFile" multiple />
-    <div></div>
+    <div><br></div>
     <input type="submit" value="Update Listing" />
-    <input type="submit" value="Delete" formaction="/items/delete/{{.Id}}" />
+    <input type="submit" value="Delete" formaction="/items/delete/{{.Share.ID}}" />
   </div>
 </form>
 {{ end }}

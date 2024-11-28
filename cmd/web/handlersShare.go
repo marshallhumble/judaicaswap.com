@@ -121,6 +121,7 @@ func (app *application) shareCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) shareCreatePost(w http.ResponseWriter, r *http.Request) {
+
 	if !app.isAuthenticated(r) {
 		data := app.newTemplateData(r)
 		app.render(w, r, http.StatusOK, "home.gohtml", data)
@@ -160,19 +161,21 @@ func (app *application) shareCreatePost(w http.ResponseWriter, r *http.Request) 
 				app.serverError(w, r, err)
 			}
 
+			fullName := app.S3Url + file.Filename
+
 			switch key {
 			case 0:
-				form.Picture1 = file.Filename
+				form.Picture1 = fullName
 			case 1:
-				form.Picture2 = file.Filename
+				form.Picture2 = fullName
 			case 2:
-				form.Picture3 = file.Filename
+				form.Picture3 = fullName
 			case 3:
-				form.Picture4 = file.Filename
+				form.Picture4 = fullName
 			case 4:
-				form.Picture5 = file.Filename
+				form.Picture5 = fullName
 			default:
-				form.Picture1 = file.Filename
+				form.Picture1 = fullName
 			}
 		}
 	}
