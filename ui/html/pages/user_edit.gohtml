@@ -32,13 +32,27 @@
           <input type="password" name="password" value="" />
         </label>
       </div>
-      <time
+      <div
         >Created:
-        <td>{{ humanDate .Created }}</td></time
+        {{ humanDate .Created }}</div
       >
+
       <br />
 
       {{ if .Admin }}
+        <div>
+          Question 1:
+          {{.Question1}}
+        </div>
+        <div>
+          Question 2:
+          {{.Question1}}
+        </div>
+        <div>
+          Question 3:
+          {{.Question1}}
+        </div>
+          <br>
       <div>
         <label for="admin">
           Admin:

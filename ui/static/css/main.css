@@ -19,10 +19,15 @@ body {
 }
 
 header,
-nav,
 main,
+nav,
 footer {
   padding: 2px calc((100% - 800px) / 2) 0;
+}
+
+nav.links {
+  position: absolute;
+  padding: 0;
 }
 
 div.links {
@@ -31,13 +36,14 @@ div.links {
 
 li.navLi {
   display: inline;
+
 }
 
 a.navLi{
   text-decoration: none;
   padding: 15px;
   display: block;
-  text-align: center;
+  text-align: start;
 }
 
 ul.navUL {
