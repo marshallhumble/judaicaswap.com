@@ -1,24 +1,4 @@
-create table config
-(
-    mail_server   tinytext not null,
-    mail_username tinytext not null,
-    mail_password tinytext not null,
-    mail_port     tinytext not null,
-    server_name   tinytext not null
-)
-    engine = InnoDB;
 
-create table sessions
-(
-    token  char(43)     not null
-        primary key,
-    data   blob         not null,
-    expiry timestamp(6) not null
-)
-    engine = InnoDB;
-
-create index sessions_expiry_idx
-    on sessions (expiry);
 
 create table shares
 (
@@ -61,3 +41,14 @@ create table users
     engine = InnoDB;
 
 
+INSERT INTO users (name, email, hashed_password, created, admin, user, guest, disabled) VALUES (
+     'Alice Jones',
+   'alice@example.com',
+  '$2a$12$NuTjWXm3KKntReFwyBVHyuf/to.HEwTy.eS206TNfkGfr6HzGJSWG',
+ '2022-01-01 09:18:24',
+0,
+  1,
+   0,
+   0
+
+                                                                 );

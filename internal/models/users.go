@@ -109,11 +109,11 @@ func (m *UserModel) Authenticate(email, password string) (int, error) {
 }
 
 func (m *UserModel) Exists(id int) (exist bool, admin bool, user bool, guest bool, disabled bool, error error) {
-	stmt := `SELECT id, Admin, guest, disabled from users WHERE id = ?`
+	stmt := `SELECT id, Admin, guest, user, disabled from users WHERE id = ?`
 
 	var u User
 
-	err := m.DB.QueryRow(stmt, id).Scan(&u.ID, &u.Admin, &u.Guest, &u.Disabled)
+	err := m.DB.QueryRow(stmt, id).Scan(&u.ID, &u.Admin, &u.User, &u.Guest, &u.Disabled)
 
 	if err != nil {
 		// If the query returns no rows, then row.Scan() will return a
