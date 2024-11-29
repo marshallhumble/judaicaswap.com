@@ -1,24 +1,13 @@
 {{define "title"}}Home{{end}} {{define "main"}}
 <h2>Latest Items</h2>
-{{if .Share}}
-
-  {{range .Shares}}
-  <div class="flex-container">
-    <div>
+{{if .Share}} {{range .Shares}}
+<div class="flex-container">
+  <div>
     <a href="/items/view/{{.ID}}">{{.Title}}</a>
-    </div>
-    <div>
-    {{.Description}}
-    </div>
-    <div>
-    <img
-        src="{{.Picture1}}"
-        alt="Image for {{.Title}}"
-        class="editPage"
-    />
-    </div>
-
   </div>
-    {{end}}
-
-{{end}} {{end}}
+  <div>{{.Description}}</div>
+  <div>
+    <img src="{{.Picture1}}" alt="Image for {{.Title}}" class="editPage" />
+  </div>
+</div>
+{{end}} {{end}} {{end}}

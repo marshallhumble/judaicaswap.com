@@ -17,7 +17,7 @@ func (app *application) routes() http.Handler {
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
 	//mux.Handle("GET /static/", http.FileServerFS(ui.Files))
 
-	//PING! PONG! used for testing
+	//PING? PONG! used for testing
 	mux.HandleFunc("GET /ping", ping)
 
 	//dynamic middleware route
@@ -37,6 +37,7 @@ func (app *application) routes() http.Handler {
 	mux.Handle("GET /items/create", protected.ThenFunc(app.shareCreate))
 	mux.Handle("POST /items/create", protected.ThenFunc(app.shareCreatePost))
 	mux.Handle("GET /items/edit/{id}", dynamic.ThenFunc(app.shareEdit))
+	mux.Handle("POST /items/edit/{id}", dynamic.ThenFunc(app.shareEditPost))
 	mux.Handle("GET /items/delete/{id}", dynamic.ThenFunc(app.shareDelete))
 	mux.Handle("POST /items/sendEmail/{id}", dynamic.ThenFunc(app.sendMail))
 

@@ -20,15 +20,15 @@ import (
 type shareCreateForm struct {
 	ItemName            string    `form:"itemName"`
 	Description         string    `form:"description"`
-	Owner               int       `form:"-"`
+	Owner               int       `form:"owner"`
 	Email               string    `form:"email"`
 	Files               []os.File `form:"uploadFile"`
-	Picture1            string    `form:"-"`
-	Picture2            string    `form:"-"`
-	Picture3            string    `form:"-"`
-	Picture4            string    `form:"-"`
-	Picture5            string    `form:"-"`
-	ShipsIntl           bool      `form:"-"`
+	Picture1            string    `form:"picture1"`
+	Picture2            string    `form:"picture2"`
+	Picture3            string    `form:"picture3"`
+	Picture4            string    `form:"picture4"`
+	Picture5            string    `form:"picture5"`
+	ShipsIntl           bool      `form:"shipsIntl"`
 	Avail               bool      `form:"avail"`
 	Expires             int       `form:"expires"`
 	validator.Validator `form:"-"`
@@ -139,7 +139,7 @@ func (app *application) shareCreatePost(w http.ResponseWriter, r *http.Request) 
 
 	for key, file := range multipartFormData.File["uploadFile"] {
 
-		if key < 5 {
+		if key < 5 && file.Filename != "" {
 
 			ext := filepath.Ext(file.Filename)
 			nTime := fileDate(time.Now())
@@ -212,6 +212,7 @@ func (app *application) shareCreatePost(w http.ResponseWriter, r *http.Request) 
 }
 
 func (app *application) shareEdit(w http.ResponseWriter, r *http.Request) {
+
 	if !app.isAuthenticated(r) {
 		data := app.newTemplateData(r)
 		app.render(w, r, http.StatusOK, "home.gohtml", data)
@@ -262,7 +263,7 @@ func (app *application) shareEditPost(w http.ResponseWriter, r *http.Request) {
 
 	for key, file := range multipartFormData.File["uploadFile"] {
 
-		if key < 5 {
+		if key < 5 && file.Filename != "" {
 			ext := filepath.Ext(file.Filename)
 			nTime := fileDate(time.Now())
 			id := app.sessionManager.GetInt(r.Context(), "authenticatedUserID")
@@ -279,30 +280,39 @@ func (app *application) shareEditPost(w http.ResponseWriter, r *http.Request) {
 			f, _ := file.Open()
 			io.Copy(dst, f)
 
+			if err := app.uploadFileToS3(file.Filename); err != nil {
+				app.serverError(w, r, err)
+			}
+
+			fullName := app.S3Url + file.Filename
+
 			switch key {
 			case 0:
-				form.Picture1 = file.Filename
+				form.Picture1 = fullName
 			case 1:
-				form.Picture2 = file.Filename
+				form.Picture2 = fullName
 			case 2:
-				form.Picture3 = file.Filename
+				form.Picture3 = fullName
 			case 3:
-				form.Picture4 = file.Filename
+				form.Picture4 = fullName
 			case 4:
-				form.Picture5 = file.Filename
+				form.Picture5 = fullName
 			default:
-				form.Picture1 = file.Filename
+				form.Picture1 = fullName
 			}
 		}
 	}
 
 	//UpdateShare(id, title, description, picture1, picture2, picture3, picture4,
 	//	picture5 string, ships, avail bool) error
-	if err := app.Share.UpdateShare(id, form.ItemName, form.Description, form.Picture1, form.Picture2,
-		form.Picture3, form.Picture4, form.Picture5, form.ShipsIntl, form.Avail); err != nil {
-		app.serverError(w, r, err)
-		return
-	}
+	share, err := app.Share.UpdateShare(id, form.ItemName, form.Description, form.Picture1, form.Picture2,
+		form.Picture3, form.Picture4, form.Picture5, form.ShipsIntl, form.Avail)
+
+	data := app.newTemplateData(r)
+	data.Share = share
+
+	app.sessionManager.Put(r.Context(), "flash", "Item successfully updated!")
+	http.Redirect(w, r, fmt.Sprintf("/items/view/%d", id), http.StatusSeeOther)
 }
 
 func (app *application) shareDelete(w http.ResponseWriter, r *http.Request) {

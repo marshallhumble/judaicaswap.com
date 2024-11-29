@@ -36,10 +36,9 @@ div.links {
 
 li.navLi {
   display: inline;
-
 }
 
-a.navLi{
+a.navLi {
   text-decoration: none;
   padding: 15px;
   display: block;

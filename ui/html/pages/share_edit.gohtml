@@ -1,7 +1,7 @@
 {{ define "title" }}Item {{ .Share.Title }}{{ end }} {{ define "main" }}
 <form
   enctype="multipart/form-data"
-  action="/share/edit/{{ .Share.ID }}"
+  action="/items/edit/{{ .Share.ID }}"
   method="POST"
   novalidate
 >
@@ -101,9 +101,13 @@
     <label class="error">{{ . }}</label>
     {{ end }}
     <input type="file" name="uploadFile" multiple />
-    <div><br></div>
-    <input type="submit" value="Update Listing" />
-    <input type="submit" value="Delete" formaction="/items/delete/{{.Share.ID}}" />
+    <div><br /></div>
+    <input type="submit" value="Update Listing"/>
+    <input
+      type="submit"
+      value="Delete"
+      formaction="/items/delete/{{.Share.ID}}"
+    />
   </div>
 </form>
 {{ end }}

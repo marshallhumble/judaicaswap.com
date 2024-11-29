@@ -24,7 +24,6 @@ func (app *application) uploadFileToS3(fileName string) error {
 	if err != nil {
 		log.Printf("Couldn't open file %v to upload. Here's why: %v\n", fullName, err)
 	} else {
-		fmt.Printf("Uploading file %v\n", fullName)
 		defer file.Close()
 		_, err := app.S3Client.PutObject(context.TODO(), &s3.PutObjectInput{
 			Bucket: aws.String(app.S3Bucket + "/images/"),
@@ -37,7 +36,6 @@ func (app *application) uploadFileToS3(fileName string) error {
 			return fmt.Errorf("failed to upload file to S3: %v", err)
 		}
 
-		log.Printf("Successfully uploaded %q\n", fullName)
 		_ = os.Remove(fullName)
 
 		return nil

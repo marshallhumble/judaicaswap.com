@@ -15,9 +15,9 @@ type userSignupForm struct {
 	Name                string `form:"name"`
 	Email               string `form:"email"`
 	Password            string `form:"password"`
-	Admin               bool   `form:"-"`
-	User                bool   `form:"-"`
-	Guest               bool   `form:"-"`
+	Admin               bool   `form:"admin"`
+	User                bool   `form:"user"`
+	Guest               bool   `form:"guest"`
 	Question1           string `form:"question1"`
 	Question2           string `form:"question2"`
 	Question3           string `form:"question3"`
@@ -42,7 +42,10 @@ func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
 	var form userSignupForm
 
 	if err := app.decodePostForm(r, &form); err != nil {
-		app.clientError(w, http.StatusBadRequest)
+		data := app.newTemplateData(r)
+		data.Form = form
+		app.sessionManager.Put(r.Context(), "flash", "Error, please try again.")
+		app.render(w, r, http.StatusUnprocessableEntity, "signup.gohtml", data)
 		return
 	}
 
@@ -53,6 +56,9 @@ func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
 	form.CheckField(validator.NotBlank(form.Password), "password", "This field cannot be blank")
 	form.CheckField(validator.MinChars(form.Password, 12), "password",
 		"This field must be at least 12 characters long")
+	form.CheckField(validator.NotBlank(form.Question1), "question1", "This field cannot be blank")
+	form.CheckField(validator.NotBlank(form.Question2), "question2", "This field cannot be blank")
+	form.CheckField(validator.NotBlank(form.Question3), "question3", "This field cannot be blank")
 
 	if !form.Valid() {
 		data := app.newTemplateData(r)
@@ -99,6 +105,7 @@ func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
 
 	if err := app.decodePostForm(r, &form); err != nil {
 		app.clientError(w, http.StatusBadRequest)
+
 		return
 	}
 
@@ -315,7 +322,7 @@ func (app *application) updateUserPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := app.users.UpdateUser(id, form.Name, form.Email, form.Password, false, true, false)
+	user, err := app.users.UpdateUser(id, form.Name, form.Email, form.Password, form.Admin, form.User, form.Guest)
 
 	data := app.newTemplateData(r)
 	data.User = user
