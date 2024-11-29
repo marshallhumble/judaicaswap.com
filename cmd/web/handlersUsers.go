@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -16,9 +15,9 @@ type userSignupForm struct {
 	Name                string `form:"name"`
 	Email               string `form:"email"`
 	Password            string `form:"password"`
-	Admin               bool   `form:"-"`
-	User                bool   `form:"-"`
-	Guest               bool   `form:"-"`
+	Admin               bool   `form:"admin"`
+	User                bool   `form:"user"`
+	Guest               bool   `form:"guest"`
 	Question1           string `form:"question1"`
 	Question2           string `form:"question2"`
 	Question3           string `form:"question3"`
@@ -43,7 +42,6 @@ func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
 	var form userSignupForm
 
 	if err := app.decodePostForm(r, &form); err != nil {
-		fmt.Println(err)
 		data := app.newTemplateData(r)
 		data.Form = form
 		app.sessionManager.Put(r.Context(), "flash", "Error, please try again.")
@@ -324,7 +322,7 @@ func (app *application) updateUserPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := app.users.UpdateUser(id, form.Name, form.Email, form.Password, false, true, false)
+	user, err := app.users.UpdateUser(id, form.Name, form.Email, form.Password, form.Admin, form.User, form.Guest)
 
 	data := app.newTemplateData(r)
 	data.User = user

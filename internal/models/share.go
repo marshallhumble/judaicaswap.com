@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 )
 
@@ -15,7 +16,7 @@ type ShareInterface interface {
 	Remove(id int) error
 	GetAllFromUser(id int) ([]Share, error)
 	UpdateShare(id int, title, description, picture1, picture2, picture3, picture4,
-		picture5 string, ships, avail bool) error
+		picture5 string, ships, avail bool) (Share, error)
 }
 
 type Share struct {
@@ -152,15 +153,63 @@ func (m *ShareModel) GetAllFromUser(id int) ([]Share, error) {
 }
 
 func (m *ShareModel) UpdateShare(id int, title, description, picture1, picture2, picture3, picture4,
-	picture5 string, ships, avail bool) error {
-	stmt := `UPDATE shares SET title = ?, description = ?, picture1 =?, picture2 = ?, picture3 = ?, picture4 =?, 
-                  picture5 = ?, shipsintl = ?, available = ? WHERE id = ?`
+	picture5 string, ships, avail bool) (Share, error) {
+
+	var s Share
+
+	if picture1 == "" {
+		stmt := `UPDATE shares
+				SET 
+					title = COALESCE(?, title),
+					description = COALESCE(?, description),
+					shipsintl = COALESCE(?, shipsintl),
+					available = COALESCE(?, available)
+				WHERE id = ?;`
+
+		_, err := m.DB.Exec(stmt, title, description, ships, avail, id)
+
+		if err != nil {
+			return s, err
+		}
+
+		s.ID = id
+		s.Title = title
+		s.Description = description
+		s.ShipsIntl = ships
+		s.Available = avail
+		fmt.Println("Updated share nil")
+		return s, nil
+	}
+
+	stmt := `UPDATE shares
+				SET 
+					title = COALESCE(?, title),
+					description = COALESCE(?, description),
+					picture1 = COALESCE(?, picture1),
+					picture2 = COALESCE(?, picture2),
+					picture3 = COALESCE(?, picture3),
+					picture4 = COALESCE(?, picture4),
+					picture5 = COALESCE(?, picture5),
+					shipsintl = COALESCE(?, shipsintl),
+					available = COALESCE(?, available)
+				WHERE id = ?;`
 
 	_, err := m.DB.Exec(stmt, title, description, picture1, picture2, picture3, picture4, picture5, ships, avail, id)
 
 	if err != nil {
-		return err
+		return s, err
 	}
 
-	return nil
+	s.ID = id
+	s.Title = title
+	s.Description = description
+	s.Picture1 = picture1
+	s.Picture2 = picture2
+	s.Picture3 = picture3
+	s.Picture4 = picture4
+	s.Picture5 = picture5
+	s.ShipsIntl = ships
+	s.Available = avail
+
+	return s, nil
 }

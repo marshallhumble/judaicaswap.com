@@ -219,8 +219,12 @@ func (m *UserModel) UpdateUser(id int, name, email, password string, admin, user
 		return usr, err
 	}
 
+	usr.ID = id
 	usr.Name = name
 	usr.Email = email
+	usr.Admin = admin
+	usr.Guest = guest
+	usr.User = user
 
 	return usr, nil
 }

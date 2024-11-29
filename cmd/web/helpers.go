@@ -80,6 +80,11 @@ func (app *application) decodePostForm(r *http.Request, dst any) error {
 		if err != nil {
 			return err
 		}
+	} else {
+		err := r.ParseForm()
+		if err != nil {
+			return err
+		}
 	}
 
 	// Call Decode() on our decoder instance, passing the target destination as

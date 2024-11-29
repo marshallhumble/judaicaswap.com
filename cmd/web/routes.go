@@ -37,6 +37,7 @@ func (app *application) routes() http.Handler {
 	mux.Handle("GET /items/create", protected.ThenFunc(app.shareCreate))
 	mux.Handle("POST /items/create", protected.ThenFunc(app.shareCreatePost))
 	mux.Handle("GET /items/edit/{id}", dynamic.ThenFunc(app.shareEdit))
+	mux.Handle("POST /items/edit/{id}", dynamic.ThenFunc(app.shareEditPost))
 	mux.Handle("GET /items/delete/{id}", dynamic.ThenFunc(app.shareDelete))
 	mux.Handle("POST /items/sendEmail/{id}", dynamic.ThenFunc(app.sendMail))
 

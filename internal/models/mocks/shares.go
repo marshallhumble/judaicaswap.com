@@ -46,6 +46,6 @@ func (m *ShareModel) GetAllFromUser(id int) ([]models.Share, error) {
 	return []models.Share{MockShares}, nil
 }
 func (m *ShareModel) UpdateShare(id int, title, description, picture1, picture2, picture3, picture4,
-	picture5 string, ships, avail bool) error {
-	return nil
+	picture5 string, ships, avail bool) (models.Share, error) {
+	return models.Share{}, nil
 }

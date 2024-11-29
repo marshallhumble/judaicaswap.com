@@ -40,7 +40,7 @@
     <input type="submit" name="update" value="Send Email" />
   </div>
   {{ end }} {{if .IsAdmin}}
-  <input type="submit" value="edit" formaction="/items/edit/{{.Share.ID}}" />
+  <input type="submit" value="edit" formaction="/items/edit/{{.Share.ID}}" formmethod="get"/>
   {{end}}
 </form>
 {{ else }}
