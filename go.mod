@@ -5,7 +5,7 @@ go 1.23.3
 require (
 	github.com/alexedwards/scs/mysqlstore v0.0.0-20240316134038-7e11d57e8885
 	github.com/alexedwards/scs/v2 v2.8.0
-	github.com/aws/aws-sdk-go-v2 v1.32.5
+	github.com/aws/aws-sdk-go-v2 v1.32.6
 	github.com/aws/aws-sdk-go-v2/config v1.28.5
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.69.0
 	github.com/go-playground/form/v4 v4.2.1
@@ -34,7 +34,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.28.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.33.1 // indirect
 	github.com/aws/smithy-go v1.22.1 // indirect
-	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	golang.org/x/sys v0.27.0 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 )
