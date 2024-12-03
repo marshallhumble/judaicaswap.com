@@ -63,7 +63,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	addr := flag.String("addr", ":4000", "HTTP network address")
+	addr := flag.String("addr", ":443", "HTTP network address")
 	dsn := flag.String("dsn", dbUser+":"+dbPass+"@tcp("+dbHost+":3306)/"+dbName+"?parseTime=true", "MySQL data source name")
 
 	flag.Parse()
