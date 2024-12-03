@@ -67,7 +67,6 @@ func (m *ServerConfigModel) SendMail(rEmail, sEmail, itemURL string) error {
 
 	d := gomail.NewDialer(s.mailServer, s.mailPort, s.mailUsername, s.mailPassword)
 
-	// Send the email to Bob, Cora and Dan.
 	if err := d.DialAndSend(mail); err != nil {
 		return err
 	}
