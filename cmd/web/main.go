@@ -57,14 +57,14 @@ func main() {
 	client := s3.NewFromConfig(cfg)
 
 	//Get the DB Details from the .env file, !TODO: change to OS Vars in prod
-	dbPass, dbUser, dbName, s3BucketName, s3UrlName, err := readFileEnvs(".env")
+	dbPass, dbUser, dbHost, dbName, s3BucketName, s3UrlName, err := readFileEnvs(".env")
 	if err != nil {
 		logger.Error(err.Error())
 		os.Exit(1)
 	}
 
 	addr := flag.String("addr", ":4000", "HTTP network address")
-	dsn := flag.String("dsn", dbUser+":"+dbPass+"@/"+dbName+"?parseTime=true", "MySQL data source name")
+	dsn := flag.String("dsn", dbUser+":"+dbPass+"@"+dbHost+"/"+dbName+"?parseTime=true", "MySQL data source name")
 
 	flag.Parse()
 
@@ -148,16 +148,16 @@ func openDB(dsn string) (*sql.DB, error) {
 }
 
 // readFileEnvs pull the sensitive data details from the .ENV file that we are using for Docker init
-func readFileEnvs(fileName string) (dbPass, dbUser, dbName, s3bucket, s3url string, err error) {
+func readFileEnvs(fileName string) (dbPass, dbUser, dbHost, dbName, s3bucket, s3url string, err error) {
 
 	file, err := os.Open(fileName)
 	if err != nil {
-		return "", "", "", "", "", err
+		return "", "", "", "", "", "", err
 	}
 
 	data, err := io.ReadAll(file)
 	if err != nil {
-		return "", "", "", "", "", err
+		return "", "", "", "", "", "", err
 	}
 
 	text := string(data)
@@ -165,10 +165,11 @@ func readFileEnvs(fileName string) (dbPass, dbUser, dbName, s3bucket, s3url stri
 	dbName = getVariable(text, "DB_DATABASE")
 	dbPass = getVariable(text, "DB_PASSWORD")
 	dbUser = getVariable(text, "DB_USERNAME")
+	dbHost = getVariable(text, "DB_HOST")
 	s3bucket = getVariable(text, "S3BUCKET")
 	s3url = getVariable(text, "S3URL")
 
-	return dbPass, dbUser, dbName, s3bucket, s3url, nil
+	return dbPass, dbUser, dbHost, dbName, s3bucket, s3url, nil
 }
 
 // getVariable get the variables from the ENV file, right now we are assuming they look like this:
