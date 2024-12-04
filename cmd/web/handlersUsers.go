@@ -119,6 +119,7 @@ func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
 	if !form.Valid() {
 		data := app.newTemplateData(r)
 		data.Form = form
+		app.sessionManager.Put(r.Context(), "flash", "Incorrect Email or Password")
 		app.render(w, r, http.StatusUnprocessableEntity, "login.gohtml", data)
 		return
 	}
