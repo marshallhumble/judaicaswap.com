@@ -32,14 +32,16 @@ func (app *application) routes() http.Handler {
 	//Default route
 	mux.Handle("GET /{$}", dynamic.ThenFunc(app.home))
 
-	//Protected File Create/View Routes
+	//Dynamic View Item (not protected)
 	mux.Handle("GET /items/view/{id}", dynamic.ThenFunc(app.shareView))
+
+	//Protected File Create/View Routes
 	mux.Handle("GET /items/create", protected.ThenFunc(app.shareCreate))
 	mux.Handle("POST /items/create", protected.ThenFunc(app.shareCreatePost))
-	mux.Handle("GET /items/edit/{id}", dynamic.ThenFunc(app.shareEdit))
-	mux.Handle("POST /items/edit/{id}", dynamic.ThenFunc(app.shareEditPost))
-	mux.Handle("GET /items/delete/{id}", dynamic.ThenFunc(app.shareDelete))
-	mux.Handle("POST /items/sendEmail/{id}", dynamic.ThenFunc(app.sendMail))
+	mux.Handle("GET /items/edit/{id}", protected.ThenFunc(app.shareEdit))
+	mux.Handle("POST /items/edit/{id}", protected.ThenFunc(app.shareEditPost))
+	mux.Handle("GET /items/delete/{id}", protected.ThenFunc(app.shareDelete))
+	mux.Handle("POST /items/sendEmail/{id}", protected.ThenFunc(app.sendMail))
 
 	//Protected User Routes
 	mux.Handle("GET /users/", admin.ThenFunc(app.getAllUsers))
@@ -48,6 +50,10 @@ func (app *application) routes() http.Handler {
 	mux.Handle("POST /user/delete/{id}", protected.ThenFunc(app.deleteUser))
 	mux.Handle("GET /user/update/", protected.ThenFunc(app.updateUser))
 	mux.Handle("POST /user/update/", protected.ThenFunc(app.updateUserPost))
+
+	//Dynamic User Contact Form (not protected)
+	mux.Handle("GET /contact", dynamic.ThenFunc(app.Contact))
+	mux.Handle("POST /contact", dynamic.ThenFunc(app.ContactPost))
 
 	//User Sign-up/Login/Logout
 	mux.Handle("GET /user/signup", dynamic.ThenFunc(app.userSignup))

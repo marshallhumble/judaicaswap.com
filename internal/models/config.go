@@ -10,6 +10,7 @@ import (
 type ServerConfigInterface interface {
 	GetConfig() (ServerConfig, error)
 	SendMail(rEmail, sEmail, fName string) error
+	ContactFormEmail(name, email, message string) error
 }
 
 type ServerConfig struct {
@@ -64,6 +65,29 @@ func (m *ServerConfigModel) SendMail(rEmail, sEmail, itemURL string) error {
 	mail.SetHeader("To", rEmail)
 	mail.SetHeader("Subject", subject)
 	mail.SetBody("text/html", body)
+
+	d := gomail.NewDialer(s.mailServer, s.mailPort, s.mailUsername, s.mailPassword)
+
+	if err := d.DialAndSend(mail); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *ServerConfigModel) ContactFormEmail(name, email, message string) error {
+	s, err := m.GetConfig()
+	if err != nil {
+		return err
+	}
+
+	message = message + "<br> email contact is: " + email + "<br>"
+
+	mail := gomail.NewMessage()
+	mail.SetHeader("From", s.mailUsername)
+	mail.SetHeader("To", s.mailUsername)
+	mail.SetHeader("Subject", "New contact form email from: "+name)
+	mail.SetBody("text/html", message)
 
 	d := gomail.NewDialer(s.mailServer, s.mailPort, s.mailUsername, s.mailPassword)
 

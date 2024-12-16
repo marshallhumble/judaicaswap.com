@@ -171,12 +171,13 @@ func (m *UserModel) GetAllUsers() ([]User, error) {
 }
 
 func (m *UserModel) Get(id int) (User, error) {
-	stmt := `SELECT id, name, email, created, admin, user, guest, disabled FROM users WHERE id = ?`
+	stmt := `SELECT id, name, email, created, admin, user, guest, disabled, 
+       Question1, Question2, Question3 FROM users WHERE id = ?`
 
 	var u User
 
 	err := m.DB.QueryRow(stmt, id).Scan(&u.ID, &u.Name, &u.Email, &u.Created,
-		&u.Admin, &u.User, &u.Guest, &u.Disabled)
+		&u.Admin, &u.User, &u.Guest, &u.Disabled, &u.Question1, &u.Question2, &u.Question3)
 
 	if err != nil {
 		// If the query returns no rows, then row.Scan() will return a
