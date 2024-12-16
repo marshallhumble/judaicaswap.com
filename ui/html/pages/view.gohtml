@@ -37,10 +37,12 @@
     {{end}}
   </div>
   <div>
+    <h2>This will send the owner of this item your email address so they can contact you.</h2>
     <input type="submit" name="update" value="Send Email" />
   </div>
   {{ end }} {{if .IsAdmin}}
-  <input type="submit" value="edit" formaction="/items/edit/{{.Share.ID}}" formmethod="get"/>
+    <h2>Edit this item's details:</h2>
+    <input type="submit" value="edit" formaction="/items/edit/{{.Share.ID}}" formmethod="get"/>
   {{end}}
 </form>
 {{ else }}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -28,6 +29,12 @@ type userLoginForm struct {
 	Email               string `form:"email"`
 	Password            string `form:"password"`
 	validator.Validator `form:"-"`
+}
+
+type userContactForm struct {
+	Name    string `form:"name"`
+	Email   string `form:"email"`
+	Message string `form:"message"`
 }
 
 func (app *application) userSignup(w http.ResponseWriter, r *http.Request) {
@@ -180,8 +187,9 @@ func (app *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
+// func ping used for testing, just sends a reply to verify the server is up
 func ping(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("OK"))
+	_, _ = w.Write([]byte("OK"))
 }
 
 func (app *application) getAllUsers(w http.ResponseWriter, r *http.Request) {
@@ -330,4 +338,37 @@ func (app *application) updateUserPost(w http.ResponseWriter, r *http.Request) {
 
 	app.sessionManager.Put(r.Context(), "flash", "Information Updated")
 	app.render(w, r, http.StatusOK, "user_password.gohtml", data)
+}
+
+func (app *application) Contact(w http.ResponseWriter, r *http.Request) {
+	data := app.newTemplateData(r)
+	data.Form = userContactForm{}
+
+	app.render(w, r, http.StatusOK, "about.gohtml", data)
+}
+
+func (app *application) ContactPost(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Contact...")
+	var form userContactForm
+
+	if err := app.decodePostForm(r, &form); err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		fmt.Println("error 1:", err)
+		return
+	}
+
+	if err := app.config.ContactFormEmail(form.Name, form.Email, form.Message); err != nil {
+		fmt.Println("error 2:", err)
+		app.clientError(w, http.StatusBadRequest)
+		data := app.newTemplateData(r)
+		data.Form = form
+		app.sessionManager.Put(r.Context(), "flash", "Error try again")
+		app.render(w, r, http.StatusOK, "about.gohtml", data)
+	}
+
+	fmt.Println("Made it")
+	data := app.newTemplateData(r)
+	data.Form = form
+	app.sessionManager.Put(r.Context(), "flash", "Message Sent!")
+	app.render(w, r, http.StatusOK, "about.gohtml", data)
 }

@@ -6,6 +6,29 @@
   font-family: "Proxima Nova", monospace;
 }
 
+:root {
+  --color-blue: #014c70;
+  --color-blue-dark: #002b3c;
+  --color-black: #333333;
+  --color-dark-grey: #6a6a6a;
+  --color-cloud-light: #FAFAFA;
+  --color-cloud: #F7F7F7;
+  --color-cloud-dark: #f1f1f1;
+  --color-orange: orange;
+  --color-white: #FFFFFF;
+  --color-grey: #B0B0B0;
+  --color-red: #A82255;
+  --size-xxs: 0.5rem;
+  --size-xs: 0.75rem;
+  --size-sm: 1rem;
+  --size-md: 1.5rem;
+  --size-lg: 2rem;
+  --size-xl: 3rem;
+  --size-xxl: 4rem;
+  --size-xxxl: 6rem;
+  --breakpoint-small-desktop: 1260px;
+}
+
 html,
 body {
   height: 100%;
@@ -178,4 +201,42 @@ table {
   margin: 10px;
   padding: 20px;
   font-size: 30px;
+}
+
+/* === FOOTER === */
+
+footer {
+  border-top: solid 1px white;
+  background-color: white;
+  font-size: 0.78rem;
+  padding: var(--size-lg) 2em;
+}
+
+footer .constrain {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+footer a {
+  margin-right: 1.5em;
+  display: inline-block;
+  padding: 0;
+}
+
+footer i {
+  color: var(--color-cloud);
+}
+
+/* sticky footer */
+footer {
+  position: sticky;
+  top: 175vh;
+}
+/* end sticky footer */
+
+.licenses {
+  font-size: var(--size-xxs);
+  float: right;
+  color: var(--color-cloud);
 }
