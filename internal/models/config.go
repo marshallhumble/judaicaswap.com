@@ -118,7 +118,6 @@ func (m *ServerConfigModel) SendVerificationEmail(name, email, verify string) er
 	<p>Please verify your email by clicking <a href="{{.Link}}">{{.Link}}</a>.</p>
 	<br>
 	<p>After verification an admin will approve your account.</p>
-	<br>
 	<p>If you did not request this, please ignore this email.</p>
 	<p>Thanks,
 	The Judaica Web Swap Team</p>
