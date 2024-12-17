@@ -3,12 +3,12 @@
   <!-- Include the CSRF token -->
   <input type="hidden" name="csrf_token" value="{{ .CSRFToken }}" />
   <div>
-    <label>Name:</label>
+    <label class="form-lable">Name:</label>
     {{ with .Form.FieldErrors.name }}
     <label class="error">{{ . }}</label>
     {{ end }}
     <label>
-      <input type="text" name="name" value="{{ .Form.Name }}" />
+      <input type="text" class="form-control" name="name" value="{{ .Form.Name }}" />
     </label>
   </div>
   <div>
@@ -17,7 +17,7 @@
     <label class="error">{{ . }}</label>
     {{ end }}
     <label>
-      <input type="email" name="email" value="{{ .Form.Email }}" />
+      <input type="email" class="form-control" name="email" value="{{ .Form.Email }}" />
     </label>
   </div>
   <div>
@@ -25,51 +25,52 @@
     {{ with .Form.FieldErrors.password }}
     <label class="error">{{ . }}</label>
     {{ end }}
-    <label>
-      <input type="password" name="password" />
+    <label class="form-lable">
+      <input type="password" class="form-control" name="password" />
     </label>
   </div>
   <div>
-    <label>Password:</label>
+    <label class="form-lable">Password:</label>
     {{ with .Form.FieldErrors.password }}
     <label class="error">{{ . }}</label>
     {{ end }}
     <label>
-      <input type="password" name="password" />
+      <input type="password" class="form-control" name="password" />
     </label>
   </div>
   <br />
   <div class="form">
-    <label>What is your favorite Jewish Holiday:</label>
+    <label class="form-lable">What is your favorite Jewish Holiday:</label>
     {{ with .Form.FieldErrors.question1 }}
     <label class="error">{{ . }}</label>
     {{ end }}
+    <br>
     <label>
-      <input type="text" name="question1" value="{{ .Form.Question1 }}" />
+      <input type="text" class="form-control" name="question1" value="{{ .Form.Question1 }}" />
     </label>
   </div>
-  <div class="form">
+  <div class="form-lable">
     <label>What is your family minhag?:</label>
     <br />
     {{ with .Form.FieldErrors.question2 }}
     <label class="error">{{ . }}</label>
     {{ end }}
     <label>
-      <input type="text" name="question2" value="{{ .Form.Question2 }}" />
+      <input type="text" class="form-control" name="question2" value="{{ .Form.Question2 }}" />
     </label>
   </div>
   <div class="form">
-    <label>Social Media Profile Link:</label>
+    <label class="form-lable">Social Media Profile Link:</label>
     <br />
     {{ with .Form.FieldErrors.question3 }}
     <label class="error">{{ . }}</label>
     {{ end }}
     <label>
-      <input type="text" name="question3" value="{{ .Form.Question3 }}" />
+      <input type="text" class="form-control" name="question3" value="{{ .Form.Question3 }}" />
     </label>
   </div>
-  <div>
-    <input type="submit" value="Signup" />
+  <div class="mt-3">
+    <input type="submit" class="btn btn-primary" value="Signup" />
   </div>
 </form>
 {{ end }}

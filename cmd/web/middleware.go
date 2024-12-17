@@ -12,8 +12,13 @@ import (
 func commonHeaders(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Security-Policy",
-			"default-src 'self'; img-src 'self' https://judaicaswap.s3.us-east-1.amazonaws.com/; "+
-				"font-src fonts.googleapis.com; style-src 'self'; require-trusted-types-for 'script'")
+			"default-src 'self'; script-src 'self'; "+
+				"script-src-elem https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js 'self' "+
+				"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css; style-src 'self'; "+
+				"style-src-elem https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css 'self' "+
+				"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js; img-src 'self' "+
+				"https://judaicaswap.s3.us-east-1.amazonaws.com/; font-src fonts.googleapis.com; "+
+				"require-trusted-types-for 'script'; object-src 'none';")
 
 		w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
 		w.Header().Set("X-Content-Type-Options", "nosniff")

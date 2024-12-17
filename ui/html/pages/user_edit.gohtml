@@ -15,21 +15,21 @@
     <br />
     <div class="metadata">
       <div>
-        <label for="name">
+        <label for="name" class="form-label">
           Name:
-          <input type="text" name="name" value="{{ .Name }}" />
+          <input type="text" class="form-control" name="name" value="{{ .Name }}" />
         </label>
       </div>
       <div>
-        <label for="email">
+        <label for="email" class="form-label">
           Email:
-          <input type="email" name="email" value="{{ .Email }}" />
+          <input type="email" class="form-control" name="email" value="{{ .Email }}" />
         </label>
       </div>
       <div>
-        <label for="name">
+        <label for="name" class="form-label">
           Password:
-          <input type="password" name="password" value="" />
+          <input type="password" class="form-control" name="password" value="" />
         </label>
       </div>
       <div>Created: {{ humanDate .Created }}</div>
@@ -42,7 +42,7 @@
       <div>Question 3: {{.Question1}}</div>
       <br />
       <div>
-        <label for="admin">
+        <label for="admin" class="form-label">
           Admin:
           <select id="admin" name="admin">
             <option value="True" selected>True</option>
@@ -62,7 +62,7 @@
       </div>
       {{ end }} {{ if .User }}
       <div>
-        <label for="user">
+        <label for="user" class="form-label">
           User:
           <select id="user" name="user">
             <option value="True" selected>True</option>
@@ -72,7 +72,7 @@
       </div>
       {{ else }}
       <div>
-        <label for="guest">
+        <label for="guest" class="form-label">
           User:
           <select id="user" name="user">
             <option value="True">True</option>
@@ -82,7 +82,7 @@
       </div>
       {{ end }} {{ if .Guest }}
       <div>
-        <label for="guest">
+        <label for="guest" class="form-label">
           Guest:
           <select id="guest" name="guest">
             <option value="True" selected>True</option>
@@ -92,7 +92,7 @@
       </div>
       {{ else }}
       <div>
-        <label for="guest">
+        <label for="guest" class="form-label">
           Guest:
           <select id="guest" name="guest">
             <option value="True">True</option>
@@ -102,7 +102,7 @@
       </div>
       {{ end }} {{ if .Disabled }}
       <div>
-        <label for="disabled">
+        <label for="disabled" class="form-label">
           Disabled:
           <select id="disabled" name="disabled">
             <option value="True" selected>True</option>
@@ -112,7 +112,7 @@
       </div>
       {{ else }}
       <div>
-        <label for="disabled">
+        <label for="disabled" class="form-label">
           Disabled:
           <select id="guest" name="disabled">
             <option value="True">True</option>
@@ -125,13 +125,14 @@
   </div>
   {{ end }}
   <div>
-    <input type="submit" name="update" value="Update Profile" />
+    <input type="submit" class="btn btn-warning" name="update" value="Update Profile" />
   </div>
 
   {{ if not .User.Admin }}
   <div>
     <input
       type="submit"
+      class="btn btn-danger"
       value="Delete"
       formaction="/user/delete/{{ .User.ID }}"
     />
