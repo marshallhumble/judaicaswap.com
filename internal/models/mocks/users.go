@@ -7,7 +7,7 @@ import (
 type UserModel struct{}
 
 func (m *UserModel) Insert(name, email, password, question1, question2, question3 string, admin, user, guest,
-	disabled bool) error {
+	disabled bool, verification string) error {
 	switch email {
 	case "dupe@example.com":
 		return models.ErrDuplicateEmail

@@ -12,7 +12,8 @@ import (
 )
 
 type UserModelInterface interface {
-	Insert(name, email, password, question1, question2, question3 string, admin, user, guest, disabled bool, verification string) error
+	Insert(name, email, password, question1, question2, question3 string, admin, user, guest, disabled bool,
+		verification string) error
 	Authenticate(email, password string) (int, error)
 	Exists(id int) (exist bool, admin bool, user bool, guest bool, disabled bool, error error)
 	GetAllUsers() ([]User, error)
