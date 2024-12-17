@@ -30,7 +30,7 @@
     <form action="/user/logout" method="POST">
       <!-- Include the CSRF token -->
       <input type="hidden" name="csrf_token" value="{{ .CSRFToken }}" />
-      <button type="button" class="btn btn-secondary">Logout</button>
+      <button id="LogOut" class="btn btn-secondary">Logout</button>
     </form>
     {{ else }}
     <button id="signUp" class="btn btn-primary">Signup</button>

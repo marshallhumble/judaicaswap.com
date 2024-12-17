@@ -143,8 +143,8 @@ func (app *application) isUser(r *http.Request) bool {
 	return isUser
 }
 
-// RandPasswordGen get a random string of alphanum characters based on int length
-func (app *application) RandPasswordGen(length int) string {
+// AlphaNumStringGen get a random string of alphanum characters based on int length
+func (app *application) AlphaNumStringGen(length int) string {
 
 	var (
 		seededRand *rand.Rand = rand.New(

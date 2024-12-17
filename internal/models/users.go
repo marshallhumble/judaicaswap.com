@@ -12,13 +12,14 @@ import (
 )
 
 type UserModelInterface interface {
-	Insert(name, email, password, question1, question2, question3 string, admin, user, guest, disabled bool) error
+	Insert(name, email, password, question1, question2, question3 string, admin, user, guest, disabled bool, verification string) error
 	Authenticate(email, password string) (int, error)
 	Exists(id int) (exist bool, admin bool, user bool, guest bool, disabled bool, error error)
 	GetAllUsers() ([]User, error)
 	Get(id int) (User, error)
 	UpdateUser(id int, name, email, password string, admin, user, guest bool) (User, error)
 	DeleteUser(id int) error
+	CheckVerification(verify string) error
 }
 
 type User struct {
@@ -41,20 +42,22 @@ type UserModel struct {
 }
 
 // Insert The usual user page sign-up no admins can be created this way explicitly declaring it false
-func (m *UserModel) Insert(name, email, password, question1, question2, question3 string, admin, user, guest, disabled bool) error {
+func (m *UserModel) Insert(name, email, password, question1, question2, question3 string, admin, user, guest,
+	disabled bool, verification string) error {
 	// Create a bcrypt hash of the plain-text password.
 	hashedPassword, err := hashPassword(password)
 	if err != nil {
 		return err
 	}
 
-	stmt := `INSERT INTO users (name, email, hashed_password, question1, question2, question3, created, admin, user, guest, disabled)
-    VALUES(?, ?, ?, ?, ?, ?, UTC_TIMESTAMP(), ?, ?, ?, ?)`
+	stmt := `INSERT INTO users (name, email, hashed_password, question1, question2, question3, created, admin, user, 
+                   guest, disabled, verification)
+    VALUES(?, ?, ?, ?, ?, ?, UTC_TIMESTAMP(), ?, ?, ?, ?, ?)`
 
 	// Use the Exec() method to insert the user details and hashed password
 	// into the users table.
 	_, err = m.DB.Exec(stmt, name, email, string(hashedPassword), question1, question2, question3,
-		admin, user, guest, disabled)
+		admin, user, guest, disabled, verification)
 	if err != nil {
 		// If this returns an error, we use the errors.As() function to check
 		// whether the error has the type *mysql.MySQLError. If it does, the
@@ -242,4 +245,14 @@ func (m *UserModel) DeleteUser(id int) error {
 
 func hashPassword(password string) ([]byte, error) {
 	return bcrypt.GenerateFromPassword([]byte(password), 14)
+}
+
+func (m *UserModel) CheckVerification(verify string) error {
+	stmt := `UPDATE users SET disabled=false WHERE verification = ?`
+	_, err := m.DB.Exec(stmt, verify)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -7,4 +7,8 @@ document.addEventListener("DOMContentLoaded", function () {
   loginButton.addEventListener("click", function () {
     window.location.href = "/user/login";
   });
+  const logoutButton = document.getElementById("logOut");
+  loginButton.addEventListener("click", function () {
+    window.location.href = "/user/logout";
+  });
 });

@@ -128,8 +128,8 @@
     <input type="submit" class="btn btn-warning" name="update" value="Update Profile" />
   </div>
 
-  {{ if not .User.Admin }}
-  <div>
+  {{ if .User.Admin }}
+  <div class="mt-2">
     <input
       type="submit"
       class="btn btn-danger"
