@@ -45,3 +45,4 @@ func (m *UserModel) UpdateUser(id int, name, email, password string, admin, user
 func (m *UserModel) DeleteUser(id int) error {
 	return nil
 }
+func (m *UserModel) CheckVerification(verify string) error { return nil }
