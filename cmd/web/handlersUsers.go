@@ -74,11 +74,13 @@ func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	verification := app.AlphaNumStringGen(17)
+
 	// Try to create a new user record in the database. If the email already
 	// exists then add an error message to the form and re-display it.
 	//Insert(name, email, password, question1, question2, question3 string, admin, user, guest, disabled bool) error
-	if err := app.users.Insert(form.Name, form.Email, form.Password, "", "", "",
-		false, true, false, false); err != nil {
+	if err := app.users.Insert(form.Name, form.Email, form.Password, form.Question1, form.Question2, form.Question3,
+		false, true, false, true, verification); err != nil {
 		if errors.Is(err, models.ErrDuplicateEmail) {
 			form.AddFieldError("email", "Email address is already in use")
 
@@ -95,6 +97,10 @@ func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
 	// Otherwise add a confirmation flash message to the session confirming that
 	// their signup worked.
 	app.sessionManager.Put(r.Context(), "flash", "Your signup was successful. Please log in.")
+
+	if err := app.config.SendVerificationEmail(form.Name, form.Email, verification); err != nil {
+		app.logger.Error(err.Error())
+	}
 
 	// And redirect the user to the login page.
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
@@ -371,4 +377,16 @@ func (app *application) ContactPost(w http.ResponseWriter, r *http.Request) {
 	data.Form = form
 	app.sessionManager.Put(r.Context(), "flash", "Message Sent!")
 	app.render(w, r, http.StatusOK, "about.gohtml", data)
+}
+
+func (app *application) EmailVerification(w http.ResponseWriter, r *http.Request) {
+	verify := r.PathValue("verify")
+
+	if err := app.users.CheckVerification(verify); err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	app.sessionManager.Put(r.Context(), "flash", "Email Verified")
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
