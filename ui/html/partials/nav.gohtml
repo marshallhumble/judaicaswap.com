@@ -1,41 +1,43 @@
 {{ define "nav" }}
-<nav class="topnav">
-  <div class="logo">
-    <a href="/"
-      ><img
+<div class="container">
+<nav class="navbar sticky-top navbar-expand-lg">
+  <div class="container-fluid ">
+      <a href="/" class="text-decoration-none">
+      <img class="logo align-items-left"
         width="45"
         height="40"
         src="/static/images/icon.svg"
         alt="Judaica Swap"
     /></a>
-  </div>
-  <div class="links">
-    <ul class="navUL">
+
+    <ul class="navbar-nav">
       <!-- Toggle the link based on authentication status -->
       {{ if .IsGuest }}
-      <li class="navLi"><a href="/">Home</a></li>
+      <li><a href="/" class="nav-link px-2 link-secondary">Home</a></li>
       {{ end }} {{ if .IsUser }}
-      <li class="navLi"><a href="/items/create">Create listing</a></li>
-      <li class="navLi"><a href="/user/update/">Profile</a></li>
+      <li><a href="/items/create" class="nav-link px-2 link-secondary">Create listing</a></li>
+      <li><a href="/user/update/" class="nav-link px-2 link-secondary">Profile</a></li>
       {{ end }} {{ if .IsAdmin }}
-      <li class="navLi"><a href="/items/create">Create Listing</a></li>
-      <li class="navLi"><a href="/users/">Users</a></li>
-      <li class="navLi"><a href="/user/update/">Profile</a></li>
+      <li><a href="/items/create" class="nav-link px-2 link-secondary">Create Listing</a></li>
+      <li><a href="/users/" class="nav-link px-2 link-secondary">Users</a></li>
+      <li><a href="/user/update/" class="nav-link px-2 link-secondary">Profile</a></li>
       {{ end }}
     </ul>
-  </div>
-  <div class="navbutton">
+
+  <div class="text-end align-items-right">
     <!-- Toggle the links based on authentication status -->
     {{ if .IsAuthenticated }}
     <form action="/user/logout" method="POST">
       <!-- Include the CSRF token -->
       <input type="hidden" name="csrf_token" value="{{ .CSRFToken }}" />
-      <button>Logout</button>
+      <button type="button" class="btn btn-secondary">Logout</button>
     </form>
     {{ else }}
-    <button id="signUp" class="navbtn">Signup</button>
-    <button id="logIn" class="navbtn">Login</button>
+    <button id="signUp" class="btn btn-primary">Signup</button>
+    <button id="logIn" class="btn btn-primary">Login</button>
     {{ end }}
   </div>
+  </div>
 </nav>
+</div>
 {{ end }}

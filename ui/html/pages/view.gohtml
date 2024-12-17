@@ -11,9 +11,9 @@
   {{ if .IsAuthenticated }} {{ with .Share }}
   <div class="flex-container">
     <div>
-      <a href="/items/view/{{.ID}}">{{.Title}}</a>
+      <h4><a href="/items/view/{{.ID}}" class="text-decoration-none">{{.Title}}</a></h4>
     </div>
-    <div>{{.Description}}</div>
+    <div><h5>{{.Description}}</h5></div>
     {{if .Picture1}}
     <div>
       <img src="{{.Picture1}}" alt="Image for {{.Title}}" class="editPage" />
@@ -37,12 +37,12 @@
     {{end}}
   </div>
   <div>
-    <h2>This will send the owner of this item your email address so they can contact you.</h2>
-    <input type="submit" name="update" value="Send Email" />
+    <h6>This will send the owner of this item your email address so they can contact you:</h6>
+    <input type="submit" class="btn btn-warning" name="update" value="Send Email" />
   </div>
   {{ end }} {{if .IsAdmin}}
-    <h2>Edit this item's details:</h2>
-    <input type="submit" value="edit" formaction="/items/edit/{{.Share.ID}}" formmethod="get"/>
+    <h6>Edit this item's details:</h6>
+    <input type="submit" class="btn btn-danger" value="Edit" formaction="/items/edit/{{.Share.ID}}" formmethod="get"/>
   {{end}}
 </form>
 {{ else }}

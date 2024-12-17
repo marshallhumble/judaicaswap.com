@@ -3,7 +3,8 @@
 <input type="hidden" name="csrf_token" value="{{ .CSRFToken }}" />
 <h2>All Users</h2>
 {{ if .Users }}
-<table class="users">
+<table class="table">
+  <thead>
   <tr>
     <th class="users">Name:</th>
     <th class="users">Email:</th>
@@ -13,6 +14,8 @@
     <th class="users">Guest:</th>
     <th class="users">Disabled:</th>
   </tr>
+  </thead>
+  <tbody>
   {{ range .Users }}
   <tr>
     <td class="users"><a href="/user/edit/{{ .ID }}">{{ .Name }}</a></td>
@@ -24,6 +27,7 @@
     <td class="users">{{ .Disabled }}</td>
   </tr>
   {{ end }}
+  </tbody>
 </table>
 {{ else }}
 <p>No users found</p>

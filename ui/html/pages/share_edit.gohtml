@@ -12,20 +12,20 @@
   <strong>{{ .Title }}</strong>
   <legend>{{ .Title }}</legend>
   <div>
-    <label for="itemName">
+    <label for="itemName" class="form-label">
       Name:
       <input type="text" name="itemName" value="{{ .Title }}" />
     </label>
   </div>
   <div>
-    <label for="description"
+    <label for="description" class="form-label"
       >Description:
       <textarea name="description">{{ .Description }}</textarea>
     </label>
   </div>
   {{ if .ShipsIntl }}
   <div>
-    <label for="shipsIntl">
+    <label for="shipsIntl" class="form-label">
       ShipsIntl:
       <select id="shipsIntl" name="shipsIntl">
         <option value="True" selected>Yes</option>
@@ -35,7 +35,7 @@
   </div>
   {{ else }}
   <div>
-    <label for="shipsIntl">
+    <label for="shipsIntl" class="form-label">
       Willing to Ship International?:
       <select id="shipsIntl" name="shipsIntl">
         <option value="True">Yes</option>
@@ -45,7 +45,7 @@
   </div>
   {{ end }} {{ if .Available }}
   <div>
-    <label for="avail">
+    <label for="avail" class="form-label">
       Available?:
       <select id="avail" name="avail">
         <option value="True" selected>Yes</option>
@@ -55,7 +55,7 @@
   </div>
   {{ else }}
   <div>
-    <label for="avail">
+    <label for="avail" class="form-label">
       Available?:
       <select id="avail" name="avail">
         <option value="True">Yes</option>
@@ -100,11 +100,12 @@
     {{ with .Form.FieldErrors.uploadFile }}
     <label class="error">{{ . }}</label>
     {{ end }}
-    <input type="file" name="uploadFile" multiple />
+    <input type="file" class="btn btn-secondary" name="uploadFile" multiple />
     <div><br /></div>
-    <input type="submit" value="Update Listing"/>
+    <input type="submit" class="btn btn-primary" value="Update Listing"/>
     <input
       type="submit"
+      class="btn btn-danger"
       value="Delete"
       formaction="/items/delete/{{.Share.ID}}"
     />
