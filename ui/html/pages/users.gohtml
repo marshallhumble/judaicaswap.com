@@ -12,6 +12,7 @@
     <th class="users">Admin:</th>
     <th class="users">User:</th>
     <th class="users">Guest:</th>
+    <th class="users">Email Verified:</th>
     <th class="users">Disabled:</th>
   </tr>
   </thead>
@@ -24,6 +25,7 @@
     <td class="users">{{ .Admin }}</td>
     <td class="users">{{ .User }}</td>
     <td class="users">{{ .Guest }}</td>
+    <td class="users">{{ .EmailVerified }}</td>
     <td class="users">{{ .Disabled }}</td>
   </tr>
   {{ end }}

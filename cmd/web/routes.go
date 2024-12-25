@@ -55,13 +55,16 @@ func (app *application) routes() http.Handler {
 	mux.Handle("GET /contact", dynamic.ThenFunc(app.Contact))
 	mux.Handle("POST /contact", dynamic.ThenFunc(app.ContactPost))
 
-	//User Sign-up/Login/Logout Verify Email
+	//User Sign-up/Login/Logout Verify Email, Password Reset
 	mux.Handle("GET /user/signup", dynamic.ThenFunc(app.userSignup))
 	mux.Handle("POST /user/signup", dynamic.ThenFunc(app.userSignupPost))
 	mux.Handle("GET /user/login", dynamic.ThenFunc(app.userLogin))
 	mux.Handle("POST /user/login", dynamic.ThenFunc(app.userLoginPost))
 	mux.Handle("POST /user/logout", dynamic.ThenFunc(app.userLogoutPost))
 	mux.Handle("GET /verify/{verify}", dynamic.ThenFunc(app.EmailVerification))
+	mux.Handle("POST /user/reset", dynamic.ThenFunc(app.PasswordResetPost))
+	mux.Handle("GET /user/resetPassword/{verify}", dynamic.ThenFunc(app.PasswordResetValidate))
+	mux.Handle("POST /user/resetPassword/{verify}", dynamic.ThenFunc(app.PasswordResetAfterVerified))
 
 	standard := alice.New(app.recoverPanic, app.logRequest, commonHeaders)
 	return standard.Then(mux)

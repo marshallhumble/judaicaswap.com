@@ -2,10 +2,8 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
-
 	//Internal
 	"judaicaswap.com/internal/models"
 	"judaicaswap.com/internal/validator"
@@ -354,17 +352,15 @@ func (app *application) Contact(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) ContactPost(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Contact...")
+
 	var form userContactForm
 
 	if err := app.decodePostForm(r, &form); err != nil {
 		app.clientError(w, http.StatusBadRequest)
-		fmt.Println("error 1:", err)
 		return
 	}
 
 	if err := app.config.ContactFormEmail(form.Name, form.Email, form.Message); err != nil {
-		fmt.Println("error 2:", err)
 		app.clientError(w, http.StatusBadRequest)
 		data := app.newTemplateData(r)
 		data.Form = form
@@ -372,7 +368,6 @@ func (app *application) ContactPost(w http.ResponseWriter, r *http.Request) {
 		app.render(w, r, http.StatusOK, "about.gohtml", data)
 	}
 
-	fmt.Println("Made it")
 	data := app.newTemplateData(r)
 	data.Form = form
 	app.sessionManager.Put(r.Context(), "flash", "Message Sent!")
@@ -382,11 +377,99 @@ func (app *application) ContactPost(w http.ResponseWriter, r *http.Request) {
 func (app *application) EmailVerification(w http.ResponseWriter, r *http.Request) {
 	verify := r.PathValue("verify")
 
-	if err := app.users.CheckVerification(verify); err != nil {
+	passed, err := app.users.CheckVerification(verify)
+	if err != nil {
 		app.serverError(w, r, err)
 		return
 	}
 
-	app.sessionManager.Put(r.Context(), "flash", "Email Verified")
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	if passed {
+		app.sessionManager.Put(r.Context(), "flash", "Email Verified")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+
+}
+
+func (app *application) PasswordResetPost(w http.ResponseWriter, r *http.Request) {
+	var form userLoginForm
+
+	if err := app.decodePostForm(r, &form); err != nil {
+		app.clientError(w, http.StatusBadRequest)
+	}
+
+	form.CheckField(validator.NotBlank(form.Email), "email", "This field cannot be blank")
+
+	if !form.Valid() {
+		data := app.newTemplateData(r)
+		data.Form = form
+		app.sessionManager.Put(r.Context(), "flash", "Email needed for password reset")
+		app.render(w, r, http.StatusUnprocessableEntity, "login.gohtml", data)
+		return
+	}
+
+	verifyToken := app.AlphaNumStringGen(17)
+
+	err := app.users.SetVerificationCode(form.Email, verifyToken)
+	if err != nil {
+		data := app.newTemplateData(r)
+		data.Form = form
+		app.sessionManager.Put(r.Context(), "flash", "Error sending password reset email")
+		app.render(w, r, http.StatusUnprocessableEntity, "login.gohtml", data)
+		app.logger.Error(err.Error())
+		return
+	}
+
+	if err = app.config.SendPasswordResetEmail(form.Email, verifyToken); err != nil {
+		app.logger.Error(err.Error())
+	}
+
+	app.sessionManager.Put(r.Context(), "flash", "Password reset email sent!")
+	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+
+}
+
+func (app *application) PasswordResetValidate(w http.ResponseWriter, r *http.Request) {
+
+	verify := r.PathValue("verify")
+
+	passed, err := app.users.CheckVerification(verify)
+
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	if passed {
+		http.Redirect(w, r, "/user/resetPassword/"+verify, http.StatusSeeOther)
+	}
+}
+
+func (app *application) PasswordResetAfterVerified(w http.ResponseWriter, r *http.Request) {
+	verify := r.PathValue("verify")
+	var form userLoginForm
+
+	if err := app.decodePostForm(r, &form); err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	form.CheckField(validator.NotBlank(form.Password), "password", "This field cannot be blank")
+	form.CheckField(validator.MinChars(form.Password, 12), "password",
+		"This field must be at least 12 characters long")
+
+	if !form.Valid() {
+		data := app.newTemplateData(r)
+		data.Form = userLoginForm{}
+		app.render(w, r, http.StatusOK, "password_reset.gohtml", data)
+		return
+	}
+
+	if err := app.users.ResetPassword(verify, form.Password); err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	app.sessionManager.Put(r.Context(), "flash", "Password reset!")
+	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+
 }

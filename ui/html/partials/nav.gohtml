@@ -33,8 +33,11 @@
       <button id="LogOut" class="btn btn-secondary">Logout</button>
     </form>
     {{ else }}
+    <form action="/user/login" method="GET">
+    <input type="hidden" name="csrf_token" value="{{ .CSRFToken }}" />
     <button id="signUp" class="btn btn-primary">Signup</button>
     <button id="logIn" class="btn btn-primary">Login</button>
+    </form>
     {{ end }}
   </div>
   </div>

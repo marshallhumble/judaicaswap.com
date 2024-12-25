@@ -20,7 +20,9 @@ type UserModelInterface interface {
 	Get(id int) (User, error)
 	UpdateUser(id int, name, email, password string, admin, user, guest bool) (User, error)
 	DeleteUser(id int) error
-	CheckVerification(verify string) error
+	CheckVerification(verify string) (verified bool, err error)
+	SetVerificationCode(email, verificationCode string) error
+	ResetPassword(verificationCode, password string) error
 }
 
 type User struct {
@@ -36,6 +38,8 @@ type User struct {
 	User           bool
 	Guest          bool
 	Disabled       bool
+	EmailVerified  bool
+	Verification   string
 }
 
 type UserModel struct {
@@ -52,8 +56,8 @@ func (m *UserModel) Insert(name, email, password, question1, question2, question
 	}
 
 	stmt := `INSERT INTO users (name, email, hashed_password, question1, question2, question3, created, admin, user, 
-                   guest, disabled, verification)
-    VALUES(?, ?, ?, ?, ?, ?, UTC_TIMESTAMP(), ?, ?, ?, ?, ?)`
+                   guest, disabled, emailVerified, verification)
+    VALUES(?, ?, ?, ?, ?, ?, UTC_TIMESTAMP(), ?, ?, ?, ?, false, ?)`
 
 	// Use the Exec() method to insert the user details and hashed password
 	// into the users table.
@@ -244,16 +248,56 @@ func (m *UserModel) DeleteUser(id int) error {
 	return nil
 }
 
-func hashPassword(password string) ([]byte, error) {
-	return bcrypt.GenerateFromPassword([]byte(password), 14)
-}
+func (m *UserModel) SetVerificationCode(email, verificationCode string) error {
+	stmt := `UPDATE users SET verification = ?, VerifyExpiration = DATE_ADD(UTC_TIMESTAMP(), INTERVAL 30 MINUTE) WHERE email = ?`
 
-func (m *UserModel) CheckVerification(verify string) error {
-	stmt := `UPDATE users SET disabled=false WHERE verification = ?`
-	_, err := m.DB.Exec(stmt, verify)
+	_, err := m.DB.Exec(stmt, verificationCode, email)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (m *UserModel) CheckVerification(verify string) (verified bool, err error) {
+	var verificationCode string
+
+	verifyStmt := `SELECT verification FROM users WHERE verification = ? AND VerifyExpiration > UTC_TIMESTAMP()`
+
+	err = m.DB.QueryRow(verifyStmt, verify).Scan(&verificationCode)
+	if err != nil {
+		return false, err
+	}
+
+	if verificationCode == verify {
+		stmt := `UPDATE users SET disabled=false, emailVerified=true, verification=? WHERE verification = ?`
+
+		_, err := m.DB.Exec(stmt, verificationCode, verify)
+		if err != nil {
+			return false, err
+		}
+	}
+
+	return true, nil
+}
+
+func (m *UserModel) ResetPassword(verificationCode, password string) error {
+
+	HashedPassword, err := hashPassword(password)
+	if err != nil {
+		return err
+	}
+
+	stmt := `UPDATE users SET hashed_password = ? WHERE verification = ?`
+
+	_, err = m.DB.Exec(stmt, HashedPassword, verificationCode)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func hashPassword(password string) ([]byte, error) {
+	return bcrypt.GenerateFromPassword([]byte(password), 14)
 }

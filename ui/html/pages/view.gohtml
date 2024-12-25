@@ -14,37 +14,83 @@
       <h4><a href="/items/view/{{.ID}}" class="text-decoration-none">{{.Title}}</a></h4>
     </div>
     <div><h5>{{.Description}}</h5></div>
-    {{if .Picture1}}
-    <div>
-      <img src="{{.Picture1}}" alt="Image for {{.Title}}" class="editPage" />
     </div>
-    {{end}} {{if .Picture2}}
-    <div>
-      <img src="{{.Picture2}}" alt="Image for {{.Title}}" class="editPage" />
-    </div>
-    {{end}} {{if .Picture3}}
-    <div>
-      <img src="{{.Picture3}}" alt="Image for {{.Title}}" class="editPage" />
-    </div>
-    {{end}} {{if .Picture4}}
-    <div>
-      <img src="{{.Picture4}}" alt="Image for {{.Title}}" class="editPage" />
-    </div>
-    {{end}} {{if .Picture5}}
-    <div>
-      <img src="{{.Picture5}}" alt="Image for {{.Title}}" class="editPage" />
+    <style>
+      .carousel-item {
+        height:32rem;
+        background:#777;
+        position: relative;
+      }
+      .container{
+        position: absolute;
+      }
+    </style>
+
+  <div id="carouselExampleIndicators" class="carousel slide">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3" aria-label="Slide 4"></button>
+                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="4" aria-label="Slide 5"></button>
+            </div>
+            <div class="carousel-inner">
+              <div class="carousel-item active">
+                  {{if .Picture1}}
+                      <img src="{{.Picture1}}" class="d-block w-100"  alt="Image for {{.Title}}" />
+                  {{else}}
+                      <img src="/static/images/blank_image.jpg" class="d-block w-100"  alt="Image for {{.Title}}"/>
+                  {{end}}
+              </div>
+              <div class="carousel-item">
+                  {{if .Picture2}}
+                  <img src="{{.Picture2}}" class="d-block w-100"  alt="Image for {{.Title}}" />
+                      {{else}}
+                    <img src="/static/images/blank_image.jpg" class="d-block w-100"  alt="Image for {{.Title}}"/>
+                    {{end}}
+              </div>
+              <div class="carousel-item">
+                  {{if .Picture3}}
+                      <img src="{{.Picture3}}" class="d-block w-100"  alt="Image for {{.Title}}" />
+                  {{else}}
+                      <img src="/static/images/blank_image.jpg" class="d-block w-100"  alt="Image for {{.Title}}"/>
+                  {{end}}
+              </div>
+              <div class="carousel-item">
+                  {{if .Picture4}}
+                      <img src="{{.Picture4}}" class="d-block w-100"  alt="Image for {{.Title}}" />
+                  {{else}}
+                      <img src="/static/images/blank_image.jpg" class="d-block w-100"  alt="Image for {{.Title}}"/>
+                  {{end}}
+              </div>
+              <div class="carousel-item">
+                  {{if .Picture5}}
+                      <img src="{{.Picture5}}" class="d-block w-100"  alt="Image for {{.Title}}" />
+                  {{else}}
+                      <img src="/static/images/blank_image.jpg" class="d-block w-100"  alt="Image for {{.Title}}"/>
+                  {{end}}
+              </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+    <div class="mt-3">
+        <h6>This will send the owner of this item your email address so they can contact you:</h6>
+        <input type="submit" class="btn btn-warning" name="update" value="Send Email" />
     </div>
     {{end}}
-  </div>
-  <div>
-    <h6>This will send the owner of this item your email address so they can contact you:</h6>
-    <input type="submit" class="btn btn-warning" name="update" value="Send Email" />
-  </div>
-  {{ end }} {{if .IsAdmin}}
+    {{if .IsAdmin}}
     <h6>Edit this item's details:</h6>
     <input type="submit" class="btn btn-danger" value="Edit" formaction="/items/edit/{{.Share.ID}}" formmethod="get"/>
-  {{end}}
-</form>
-{{ else }}
-<h1>Must be logged in!</h1>
-{{ end }} {{ end }}
+    {{end}} {{end}}
+  </form>
+
+{{if not .IsAuthenticated}}
+    <h2>Must be logged in! </h2>
+{{end}} {{end}}
