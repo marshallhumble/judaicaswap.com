@@ -3,7 +3,6 @@ package models
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"time"
 )
 
@@ -177,7 +176,7 @@ func (m *ShareModel) UpdateShare(id int, title, description, picture1, picture2,
 		s.Description = description
 		s.ShipsIntl = ships
 		s.Available = avail
-		fmt.Println("Updated share nil")
+
 		return s, nil
 	}
 

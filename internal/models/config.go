@@ -14,6 +14,7 @@ type ServerConfigInterface interface {
 	SendMail(rEmail, sEmail, fName string) error
 	ContactFormEmail(name, email, message string) error
 	SendVerificationEmail(name, email, verify string) error
+	SendPasswordResetEmail(email, verify string) error
 }
 
 type ServerConfig struct {
@@ -114,10 +115,13 @@ func (m *ServerConfigModel) SendVerificationEmail(name, email, verify string) er
 
 	tmpl := `<html>
 	<body>
-	<h1>Hello, {{.Name}}!</h1>
+	<h2>Hello, {{.Name}}!</h2>
+	<p>Thank you for registering with Judaica Web Swap.</p>
+	<p>Before you can use your account, we need to verify your email address.</p>
+	<br>
 	<p>Please verify your email by clicking <a href="{{.Link}}">{{.Link}}</a>.</p>
 	<br>
-	<p>After verification an admin will approve your account.</p>
+	<p>After verification an admin will approve your account. The link will expire in 30 minutes.</p>
 	<p>If you did not request this, please ignore this email.</p>
 	<p>Thanks,
 	The Judaica Web Swap Team</p>
@@ -137,8 +141,6 @@ func (m *ServerConfigModel) SendVerificationEmail(name, email, verify string) er
 		return err
 	}
 
-	fmt.Println(buf.String())
-
 	mail := gomail.NewMessage()
 	mail.SetHeader("From", s.mailUsername)
 	mail.SetHeader("To", email)
@@ -152,4 +154,53 @@ func (m *ServerConfigModel) SendVerificationEmail(name, email, verify string) er
 	}
 
 	return nil
+}
+
+func (m *ServerConfigModel) SendPasswordResetEmail(email, verify string) error {
+	s, err := m.GetConfig()
+	if err != nil {
+		return err
+	}
+
+	tmpl := `<html>
+	<body>
+	<h2>Hello</h2>
+	<p>Someone requested a password reset using your email. If this was you, you can reset it
+	by clicking this link, note the link will expire in 30 minutes:
+	<br>
+	<a href="{{.Link}}">{{.Link}}</a>.</p>
+	<br>
+	<p>If this wasn't you, no action is required on your part. Nothing will change.</p>
+	<p>Thanks,
+	The Judaica Web Swap Team</p>
+	</body>
+	</html>`
+
+	t, err := template.New("webpage").Parse(tmpl)
+	if err != nil {
+		return err
+	}
+
+	link := "https://" + s.serverName + "/user/resetPassword/" + verify
+
+	user := EmailUser{Name: email, Link: link}
+	var buf bytes.Buffer
+	if err = t.Execute(&buf, user); err != nil {
+		return err
+	}
+
+	mail := gomail.NewMessage()
+	mail.SetHeader("From", s.mailUsername)
+	mail.SetHeader("To", email)
+	mail.SetHeader("Subject", "Password reset request from Judaica Web Swap")
+	mail.SetBody("text/html", buf.String())
+
+	d := gomail.NewDialer(s.mailServer, s.mailPort, s.mailUsername, s.mailPassword)
+
+	if err := d.DialAndSend(mail); err != nil {
+		return err
+	}
+
+	return nil
+
 }
