@@ -435,8 +435,9 @@ func (app *application) PasswordResetValidate(w http.ResponseWriter, r *http.Req
 	passed, err := app.users.CheckVerification(verify)
 
 	if err != nil {
-		app.serverError(w, r, err)
-		return
+		app.logger.Error(err.Error())
+		app.sessionManager.Put(r.Context(), "flash", "Linked Expired or Invalid Link")
+		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 	}
 
 	if passed {

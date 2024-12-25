@@ -259,14 +259,17 @@ func (m *UserModel) SetVerificationCode(email, verificationCode string) error {
 	return nil
 }
 
-func (m *UserModel) CheckVerification(verify string) (verified bool, err error) {
+func (m *UserModel) CheckVerification(verify string) (verified bool, error error) {
 	var verificationCode string
 
 	verifyStmt := `SELECT verification FROM users WHERE verification = ? AND VerifyExpiration > UTC_TIMESTAMP()`
 
-	err = m.DB.QueryRow(verifyStmt, verify).Scan(&verificationCode)
-	if err != nil {
-		return false, err
+	if err := m.DB.QueryRow(verifyStmt, verify).Scan(&verificationCode); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false, ErrNoRecord
+		} else {
+			return false, error
+		}
 	}
 
 	if verificationCode == verify {
