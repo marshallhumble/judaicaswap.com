@@ -17,6 +17,7 @@ type userSignupForm struct {
 	Admin               bool   `form:"admin"`
 	User                bool   `form:"user"`
 	Guest               bool   `form:"guest"`
+	emailVerified       bool   `form:"-"`
 	Question1           string `form:"question1"`
 	Question2           string `form:"question2"`
 	Question3           string `form:"question3"`
