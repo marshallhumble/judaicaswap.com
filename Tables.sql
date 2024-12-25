@@ -42,19 +42,22 @@ create table shares
 
 create table users
 (
-    id              int auto_increment
+    id               int auto_increment
         primary key,
-    name            varchar(255)         not null,
-    email           varchar(255)         not null,
-    hashed_password char(60)             not null,
-    created         datetime             not null,
-    admin           tinyint(1) default 0 not null,
-    user            tinyint(1)           not null,
-    guest           tinyint(1)           not null,
-    disabled        tinyint(1)           not null,
-    Question1       text                 null,
-    Question2       text                 null,
-    Question3       text                 null,
+    name             varchar(255)         not null,
+    email            varchar(255)         not null,
+    hashed_password  char(60)             not null,
+    created          datetime             not null,
+    admin            tinyint(1) default 0 not null,
+    user             tinyint(1)           not null,
+    guest            tinyint(1)           not null,
+    disabled         tinyint(1)           not null,
+    emailVerified    tinyint(1)           not null,
+    Question1        text                 null,
+    Question2        text                 null,
+    Question3        text                 null,
+    verification     text                 not null,
+    VerifyExpiration datetime             null,
     constraint users_uc_email
         unique (email)
 )
