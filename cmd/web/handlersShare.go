@@ -29,6 +29,8 @@ type shareCreateForm struct {
 	Picture4            string    `form:"picture4"`
 	Picture5            string    `form:"picture5"`
 	ShipsIntl           bool      `form:"shipsIntl"`
+	PayShip             bool      `form:"payShip"`
+	ProdURL             string    `form:"prodUrl"`
 	Avail               bool      `form:"avail"`
 	Expires             int       `form:"expires"`
 	validator.Validator `form:"-"`
@@ -198,10 +200,10 @@ func (app *application) shareCreatePost(w http.ResponseWriter, r *http.Request) 
 
 	//bucketName, keyName string, fileBody interface{})
 
-	//Insert(owner int, email, title, description, picture1, picture2, picture3, picture4,
-	//		picture5 string, ships, avail bool, expires int16) (int, error)
-	id, err := app.Share.Insert(owner, email, form.ItemName, form.Description, form.Picture1, form.Picture2,
-		form.Picture3, form.Picture4, form.Picture5, form.ShipsIntl, true, form.Expires)
+	//Insert(owner int, email, title, description, produrl, picture1, picture2, picture3, picture4,
+	//	picture5 string, ships, payship, avail bool, expires int) (int, error)
+	id, err := app.Share.Insert(owner, email, form.ItemName, form.Description, form.ProdURL, form.Picture1, form.Picture2,
+		form.Picture3, form.Picture4, form.Picture5, form.ShipsIntl, form.PayShip, true, form.Expires)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
@@ -303,10 +305,10 @@ func (app *application) shareEditPost(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	//UpdateShare(id, title, description, picture1, picture2, picture3, picture4,
-	//	picture5 string, ships, avail bool) error
-	share, err := app.Share.UpdateShare(id, form.ItemName, form.Description, form.Picture1, form.Picture2,
-		form.Picture3, form.Picture4, form.Picture5, form.ShipsIntl, form.Avail)
+	//UpdateShare(id int, title, description, produrl, picture1, picture2, picture3, picture4,
+	//	picture5 string, ships, payship, avail bool) (Share, error)
+	share, err := app.Share.UpdateShare(id, form.ItemName, form.Description, form.ProdURL, form.Picture1, form.Picture2,
+		form.Picture3, form.Picture4, form.Picture5, form.ShipsIntl, form.PayShip, form.Avail)
 
 	data := app.newTemplateData(r)
 	data.Share = share
