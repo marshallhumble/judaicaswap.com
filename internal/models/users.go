@@ -149,7 +149,7 @@ func (m *UserModel) Exists(id int) (exist bool, admin bool, user bool, guest boo
 }
 
 func (m *UserModel) GetAllUsers() ([]User, error) {
-	stmt := "SELECT id, name, email, hashed_password, created, admin, user, guest, disabled FROM users"
+	stmt := "SELECT id, name, email, hashed_password, created, admin, user, guest, disabled, emailVerified FROM users"
 
 	rows, err := m.DB.Query(stmt)
 	if err != nil {
@@ -163,7 +163,7 @@ func (m *UserModel) GetAllUsers() ([]User, error) {
 	for rows.Next() {
 		var u User
 		err = rows.Scan(&u.ID, &u.Name, &u.Email, &u.HashedPassword, &u.Created,
-			&u.Admin, &u.User, &u.Guest, &u.Disabled)
+			&u.Admin, &u.User, &u.Guest, &u.Disabled, &u.EmailVerified)
 		if err != nil {
 			return nil, err
 		}
@@ -180,12 +180,12 @@ func (m *UserModel) GetAllUsers() ([]User, error) {
 
 func (m *UserModel) Get(id int) (User, error) {
 	stmt := `SELECT id, name, email, created, admin, user, guest, disabled, 
-       Question1, Question2, Question3 FROM users WHERE id = ?`
+       Question1, Question2, Question3, emailVerified FROM users WHERE id = ?`
 
 	var u User
 
 	err := m.DB.QueryRow(stmt, id).Scan(&u.ID, &u.Name, &u.Email, &u.Created,
-		&u.Admin, &u.User, &u.Guest, &u.Disabled, &u.Question1, &u.Question2, &u.Question3)
+		&u.Admin, &u.User, &u.Guest, &u.Disabled, &u.Question1, &u.Question2, &u.Question3, &u.EmailVerified)
 
 	if err != nil {
 		// If the query returns no rows, then row.Scan() will return a
