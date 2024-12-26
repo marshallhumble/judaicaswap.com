@@ -56,8 +56,8 @@ func (m *UserModel) Insert(name, email, password, question1, question2, question
 	}
 
 	stmt := `INSERT INTO users (name, email, hashed_password, question1, question2, question3, created, admin, user, 
-                   guest, disabled, emailVerified, verification)
-    VALUES(?, ?, ?, ?, ?, ?, UTC_TIMESTAMP(), ?, ?, ?, ?, false, ?)`
+                   guest, disabled, emailVerified, verification, VerifyExpiration)
+    VALUES(?, ?, ?, ?, ?, ?, UTC_TIMESTAMP(), ?, ?, ?, ?, false, ?, DATE_ADD(UTC_TIMESTAMP(), INTERVAL 30 MINUTE))`
 
 	// Use the Exec() method to insert the user details and hashed password
 	// into the users table.
