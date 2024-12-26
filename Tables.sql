@@ -5,8 +5,7 @@ create table config
     mail_password tinytext not null,
     mail_port     tinytext not null,
     server_name   tinytext not null
-)
-    engine = InnoDB;
+);
 
 create table sessions
 (
@@ -14,8 +13,7 @@ create table sessions
         primary key,
     data   blob         not null,
     expiry timestamp(6) not null
-)
-    engine = InnoDB;
+);
 
 create index sessions_expiry_idx
     on sessions (expiry);
@@ -28,6 +26,7 @@ create table shares
     email       text       not null,
     title       text       not null,
     description longtext   not null,
+    produrl     text       null,
     picture1    text       null,
     picture2    text       null,
     picture3    text       null,
@@ -35,10 +34,10 @@ create table shares
     picture5    text       null,
     shipsintl   tinyint(1) not null,
     available   tinyint(1) not null,
+    payship     tinyint    not null,
     createdAt   datetime   null on update CURRENT_TIMESTAMP,
     expires     datetime   null
-)
-    engine = InnoDB;
+);
 
 create table users
 (
@@ -60,7 +59,5 @@ create table users
     VerifyExpiration datetime             null,
     constraint users_uc_email
         unique (email)
-)
-    engine = InnoDB;
-
+);
 
