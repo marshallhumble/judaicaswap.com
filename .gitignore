@@ -135,3 +135,6 @@ go.work.sum
 /tls/*.*
 
 .aws/
+
+/data/config
+/data/credentials
