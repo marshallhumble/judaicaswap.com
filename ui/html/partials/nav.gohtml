@@ -12,15 +12,17 @@
 
     <ul class="navbar-nav">
       <!-- Toggle the link based on authentication status -->
+      {{ if .IsUser }}
+        <li><a href="/items/create" class="nav-link px-2 link-secondary">Create listing</a></li>
+        <li><a href="/user/update/" class="nav-link px-2 link-secondary">Profile</a></li>
+      {{ end }}
+      {{ if .IsAdmin }}
+        <li><a href="/items/create" class="nav-link px-2 link-secondary">Create Listing</a></li>
+        <li><a href="/users/" class="nav-link px-2 link-secondary">Users</a></li>
+        <li><a href="/user/update/" class="nav-link px-2 link-secondary">Profile</a></li>
+      {{ end }}
       {{ if .IsGuest }}
-      <li><a href="/" class="nav-link px-2 link-secondary">Home</a></li>
-      {{ end }} {{ if .IsUser }}
-      <li><a href="/items/create" class="nav-link px-2 link-secondary">Create listing</a></li>
-      <li><a href="/user/update/" class="nav-link px-2 link-secondary">Profile</a></li>
-      {{ end }} {{ if .IsAdmin }}
-      <li><a href="/items/create" class="nav-link px-2 link-secondary">Create Listing</a></li>
-      <li><a href="/users/" class="nav-link px-2 link-secondary">Users</a></li>
-      <li><a href="/user/update/" class="nav-link px-2 link-secondary">Profile</a></li>
+        <li><a href="/" class="nav-link px-2 link-secondary">Home</a></li>
       {{ end }}
     </ul>
 

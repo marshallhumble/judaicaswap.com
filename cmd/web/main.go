@@ -49,14 +49,21 @@ func main() {
 		AddSource: true,
 	}))
 
-	dbPass, dbUser, dbHost, dbName, dbPort, s3BucketName, s3UrlName, s3region, err := readFileEnvs(".env")
+	dbPass, dbUser, dbHost, dbName, dbPort, s3BucketName, s3UrlName, s3credentials, s3config,
+		err := readFileEnvs(".env")
 	if err != nil {
 		logger.Error(err.Error())
 		os.Exit(1)
 	}
 
 	//AWS Login
-	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(s3region))
+	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithSharedCredentialsFiles(
+		[]string{s3credentials},
+	),
+		config.WithSharedConfigFiles(
+			[]string{s3config},
+		),
+	)
 
 	if err != nil {
 		log.Fatalf("unable to load SDK config, %v", err)
@@ -150,16 +157,17 @@ func openDB(dsn string) (*sql.DB, error) {
 }
 
 // readFileEnvs pull the sensitive data details from the .ENV file that we are using for Docker init
-func readFileEnvs(fileName string) (dbPass, dbUser, dbHost, dbName, dbPort, s3bucket, s3url, s3region string, err error) {
+func readFileEnvs(fileName string) (dbPass, dbUser, dbHost, dbName, dbPort, s3bucket, s3url,
+	s3credentials, s3config string, err error) {
 
 	file, err := os.Open(fileName)
 	if err != nil {
-		return "", "", "", "", "", "", "", "", err
+		return "", "", "", "", "", "", "", "", "", err
 	}
 
 	data, err := io.ReadAll(file)
 	if err != nil {
-		return "", "", "", "", "", "", "", "", err
+		return "", "", "", "", "", "", "", "", "", err
 	}
 
 	text := string(data)
@@ -171,17 +179,13 @@ func readFileEnvs(fileName string) (dbPass, dbUser, dbHost, dbName, dbPort, s3bu
 	dbPort = getVariable(text, "DB_PORT")
 	s3bucket = getVariable(text, "S3BUCKET")
 	s3url = getVariable(text, "S3URL")
-	s3region = getVariable(text, "S3_REGION")
+	s3credentials = getVariable(text, "S3_CREDENTIALS")
+	s3config = getVariable(text, "S3_CONFIG")
 
-	return dbPass, dbUser, dbHost, dbName, dbPort, s3bucket, s3url, s3region, nil
+	return dbPass, dbUser, dbHost, dbName, dbPort, s3bucket, s3url, s3credentials, s3config, nil
 }
 
 // getVariable get the variables from the ENV file, right now we are assuming they look like this:
-// DB_USERNAME=username
-// DB_PASSWORD=password
-// DB_DATABASE=db_name
-// S3BUCKET=s3bucketname
-// S3URL=s3url
 func getVariable(text, key string) string {
 
 	lines := strings.Split(text, "\n")

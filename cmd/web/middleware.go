@@ -130,6 +130,7 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 
 		// Otherwise, we check to see if a user with that ID exists in our
 		// database.
+		//Exists(id int) (exist, admin, user, guest, disabled bool, error error)
 		exists, admin, user, guest, disabled, err := app.users.Exists(id)
 		if err != nil {
 			app.serverError(w, r, err)
@@ -150,22 +151,22 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 		if exists {
 			ctx := context.WithValue(r.Context(), isAuthenticatedContextKey, true)
 			r = r.WithContext(ctx)
-		}
 
-		if user {
-			ctx := context.WithValue(r.Context(), isUserContextKey, true)
-			r = r.WithContext(ctx)
-		}
+			if user {
+				ctx := context.WithValue(r.Context(), isUserContextKey, true)
+				r = r.WithContext(ctx)
+			}
 
-		if guest {
-			ctx := context.WithValue(r.Context(), isGuestContextKey, true)
-			r = r.WithContext(ctx)
-		}
+			if guest {
+				ctx := context.WithValue(r.Context(), isGuestContextKey, true)
+				r = r.WithContext(ctx)
+			}
 
-		//Set the admin context key
-		if admin {
-			ctx := context.WithValue(r.Context(), isAdminContextKey, true)
-			r = r.WithContext(ctx)
+			//Set the admin context key
+			if admin {
+				ctx := context.WithValue(r.Context(), isAdminContextKey, true)
+				r = r.WithContext(ctx)
+			}
 		}
 
 		// Call the next handler in the chain.
