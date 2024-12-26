@@ -95,7 +95,7 @@ func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
 
 	// Otherwise add a confirmation flash message to the session confirming that
 	// their signup worked.
-	app.sessionManager.Put(r.Context(), "flash", "Your signup was successful. Please log in.")
+	app.sessionManager.Put(r.Context(), "flash", "Please verify your email address, and login")
 
 	if err := app.config.SendVerificationEmail(form.Name, form.Email, verification); err != nil {
 		app.logger.Error(err.Error())
