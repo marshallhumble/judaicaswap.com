@@ -116,7 +116,7 @@ func (m *UserModel) Authenticate(email, password string) (int, error) {
 	return id, nil
 }
 
-func (m *UserModel) Exists(id int) (exist bool, admin bool, user bool, guest bool, disabled bool, error error) {
+func (m *UserModel) Exists(id int) (exist, admin, user, guest, disabled bool, error error) {
 	stmt := `SELECT id, Admin, guest, user, disabled from users WHERE id = ?`
 
 	var u User

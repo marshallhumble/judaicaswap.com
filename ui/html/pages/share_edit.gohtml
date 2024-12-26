@@ -14,20 +14,26 @@
   <div>
     <label for="itemName" class="form-label">
       Name:
-      <input type="text" name="itemName" value="{{ .Title }}" />
+      <input type="text" class="form-control" name="itemName" value="{{ .Title }}" />
     </label>
   </div>
   <div>
     <label for="description" class="form-label"
       >Description:
-      <textarea name="description">{{ .Description }}</textarea>
+      <textarea name="description" class="form-control">{{ .Description }}</textarea>
+    </label>
+  </div>
+  <div>
+    <label for="prodUrl" class="form-label"
+    >Link to product website (optional):
+      <textarea name="prodUrl" class="form-control">{{ .ProdURL }}</textarea>
     </label>
   </div>
   {{ if .ShipsIntl }}
   <div>
     <label for="shipsIntl" class="form-label">
       ShipsIntl:
-      <select id="shipsIntl" name="shipsIntl">
+      <select id="shipsIntl" class="form-control" name="shipsIntl">
         <option value="True" selected>Yes</option>
         <option value="False">No</option>
       </select>
@@ -37,17 +43,37 @@
   <div>
     <label for="shipsIntl" class="form-label">
       Willing to Ship International?:
-      <select id="shipsIntl" name="shipsIntl">
+      <select id="shipsIntl" class="form-control" name="shipsIntl">
         <option value="True">Yes</option>
         <option value="False" selected>No</option>
       </select>
     </label>
   </div>
+  {{ end }} {{ if .PayShip }}
+    <div>
+      <label for="payShip" class="form-label">
+        Willing to pay for shipping?:
+        <select id="payShip" class="form-control" name="payShip">
+          <option value="True" selected>Yes</option>
+          <option value="False">No</option>
+        </select>
+      </label>
+    </div>
+  {{ else }}
+    <div>
+      <label for="payShip" class="form-label">
+        Willing to pay for shipping?:
+        <select id="payShip" class="form-control" name="payShip">
+          <option value="True">Yes</option>
+          <option value="False" selected>No</option>
+        </select>
+      </label>
+    </div>
   {{ end }} {{ if .Available }}
   <div>
     <label for="avail" class="form-label">
       Available?:
-      <select id="avail" name="avail">
+      <select id="avail" class="form-control" name="avail">
         <option value="True" selected>Yes</option>
         <option value="False">No</option>
       </select>
@@ -57,7 +83,7 @@
   <div>
     <label for="avail" class="form-label">
       Available?:
-      <select id="avail" name="avail">
+      <select id="avail" class="form-control" name="avail">
         <option value="True">Yes</option>
         <option value="False" selected>No</option>
       </select>
@@ -94,7 +120,7 @@
   {{ end }}
   <br />
   <br />
-  <div>
+  <div class="mb-5">
     <b>Limit 5, jpg or png only.</b>
     <br />
     {{ with .Form.FieldErrors.uploadFile }}

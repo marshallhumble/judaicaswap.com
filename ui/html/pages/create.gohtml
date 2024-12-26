@@ -3,28 +3,42 @@
   <!-- Include the CSRF token -->
   <input type="hidden" name="csrf_token" value="{{ .CSRFToken }}" />
   <div>
-    <label>Item Name:</label>
+    <label class="form-label">Item Name:</label>
     {{ with .Form.FieldErrors.itemName }}
     <label class="error">{{ . }}</label>
     {{ end }}
     <br>
-    <input type="text" class="form-label" name="itemName" value="{{ .Form.ItemName }}" />
+    <input type="text" class="form-control" name="itemName" value="{{ .Form.ItemName }}" />
   </div>
   <div>
     {{ with .Form.FieldErrors.description }}
     <label class="error">{{ . }}</label>
     {{ end }}
     <label for="description"
-      >Description:
+           class="form-label" >Description:
       <br>
-      <textarea name="description" class="form-label" rows=4 cols=50>{{ .Form.Description }}</textarea>
+      <textarea name="description" class="form-control" rows=4 cols=50>{{ .Form.Description }}</textarea>
     </label>
+  </div>
+  <div>
+    <label class="form-label">Link to item on web (optional):</label>
+    <br>
+    <input type="text" class="form-control" name="prodUrl" value="{{ .Form.ProdURL }}" />
   </div>
   <div>
     <label for="shipsIntl">
       Willing to Ship International:
       <select id="shipsIntl" name="shipsIntl">
         <option value="True">Yes</option>
+        <option value="False" selected>No</option>
+      </select>
+    </label>
+  </div>
+  <div>
+    <label for="payShip">
+      Willing to pay shipping?:
+      <select id="shipsIntl" name="payShip">
+        <option value="True" >Yes</option>
         <option value="False" selected>No</option>
       </select>
     </label>
@@ -49,7 +63,7 @@
     <div class="mt-1">
     <input type="file" class="btn btn-secondary" name="uploadFile" multiple />
     </div>
-    <div class="mt-1">
+    <div class="mt-1, mb-5">
     <input type="submit" class="btn btn-primary" value="Create Listing" />
     </div>
   </div>
