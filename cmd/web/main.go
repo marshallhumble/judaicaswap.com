@@ -49,7 +49,7 @@ func main() {
 		AddSource: true,
 	}))
 
-	dbPass, dbUser, dbHost, dbName, s3BucketName, s3UrlName, s3region, err := readFileEnvs(".env")
+	dbPass, dbUser, dbHost, dbName, dbPort, s3BucketName, s3UrlName, s3region, err := readFileEnvs(".env")
 	if err != nil {
 		logger.Error(err.Error())
 		os.Exit(1)
@@ -65,7 +65,8 @@ func main() {
 	awsClient := s3.NewFromConfig(cfg)
 
 	addr := flag.String("addr", ":443", "HTTP network address")
-	dsn := flag.String("dsn", dbUser+":"+dbPass+"@tcp("+dbHost+":3306)/"+dbName+"?parseTime=true", "MySQL data source name")
+	dsn := flag.String("dsn", dbUser+":"+dbPass+"@tcp("+dbHost+":"+dbPort+")/"+dbName+
+		"?parseTime=true", "MySQL data source name")
 
 	flag.Parse()
 
@@ -149,16 +150,16 @@ func openDB(dsn string) (*sql.DB, error) {
 }
 
 // readFileEnvs pull the sensitive data details from the .ENV file that we are using for Docker init
-func readFileEnvs(fileName string) (dbPass, dbUser, dbHost, dbName, s3bucket, s3url, s3region string, err error) {
+func readFileEnvs(fileName string) (dbPass, dbUser, dbHost, dbName, dbPort, s3bucket, s3url, s3region string, err error) {
 
 	file, err := os.Open(fileName)
 	if err != nil {
-		return "", "", "", "", "", "", "", err
+		return "", "", "", "", "", "", "", "", err
 	}
 
 	data, err := io.ReadAll(file)
 	if err != nil {
-		return "", "", "", "", "", "", "", err
+		return "", "", "", "", "", "", "", "", err
 	}
 
 	text := string(data)
@@ -167,11 +168,12 @@ func readFileEnvs(fileName string) (dbPass, dbUser, dbHost, dbName, s3bucket, s3
 	dbPass = getVariable(text, "DB_PASSWORD")
 	dbUser = getVariable(text, "DB_USERNAME")
 	dbHost = getVariable(text, "DB_HOST")
+	dbPort = getVariable(text, "DB_PORT")
 	s3bucket = getVariable(text, "S3BUCKET")
 	s3url = getVariable(text, "S3URL")
 	s3region = getVariable(text, "S3_REGION")
 
-	return dbPass, dbUser, dbHost, dbName, s3bucket, s3url, s3region, nil
+	return dbPass, dbUser, dbHost, dbName, dbPort, s3bucket, s3url, s3region, nil
 }
 
 // getVariable get the variables from the ENV file, right now we are assuming they look like this:
