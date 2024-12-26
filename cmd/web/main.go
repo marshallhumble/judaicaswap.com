@@ -5,9 +5,7 @@ import (
 	"crypto/tls"
 	"database/sql"
 	"flag"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"html/template"
 	"io"
@@ -52,25 +50,27 @@ func main() {
 	}))
 
 	//Get the DB Details from the .env file, !TODO: change to OS Vars in prod
-	dbPass, dbUser, dbHost, dbName, s3BucketName, s3UrlName, s3AcessKey, s3SecretKey, s3Region, err := readFileEnvs(".env")
+	dbPass, dbUser, dbHost, dbName, s3BucketName, s3UrlName, err := readFileEnvs(".env")
 	if err != nil {
 		logger.Error(err.Error())
 		os.Exit(1)
 	}
 
 	//AWS Login
-	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(s3Region),
-		config.WithCredentialsProvider(credentials.StaticCredentialsProvider{
-			Value: aws.Credentials{
-				AccessKeyID: s3AcessKey, SecretAccessKey: s3SecretKey,
-			},
-		}))
+	cfg, err := config.LoadDefaultConfig(context.TODO(),
+		config.WithSharedCredentialsFiles(
+			[]string{"data/credentials"},
+		),
+		config.WithSharedConfigFiles(
+			[]string{"data/config"},
+		),
+	)
 
 	if err != nil {
 		log.Fatalf("unable to load SDK config, %v", err)
 	}
 
-	client := s3.NewFromConfig(cfg)
+	awsClient := s3.NewFromConfig(cfg)
 
 	addr := flag.String("addr", ":443", "HTTP network address")
 	dsn := flag.String("dsn", dbUser+":"+dbPass+"@tcp("+dbHost+":3306)/"+dbName+"?parseTime=true", "MySQL data source name")
@@ -105,7 +105,7 @@ func main() {
 		formDecoder:    formDecoder,
 		sessionManager: sessionManager,
 		config:         &models.ServerConfigModel{DB: db},
-		S3Client:       client,
+		S3Client:       awsClient,
 		S3Bucket:       s3BucketName,
 		S3Url:          s3UrlName,
 	}
@@ -157,17 +157,16 @@ func openDB(dsn string) (*sql.DB, error) {
 }
 
 // readFileEnvs pull the sensitive data details from the .ENV file that we are using for Docker init
-func readFileEnvs(fileName string) (dbPass, dbUser, dbHost, dbName, s3bucket, s3url, s3access, s3secret,
-	s3region string, err error) {
+func readFileEnvs(fileName string) (dbPass, dbUser, dbHost, dbName, s3bucket, s3url string, err error) {
 
 	file, err := os.Open(fileName)
 	if err != nil {
-		return "", "", "", "", "", "", "", "", "", err
+		return "", "", "", "", "", "", err
 	}
 
 	data, err := io.ReadAll(file)
 	if err != nil {
-		return "", "", "", "", "", "", "", "", "", err
+		return "", "", "", "", "", "", err
 	}
 
 	text := string(data)
@@ -178,11 +177,8 @@ func readFileEnvs(fileName string) (dbPass, dbUser, dbHost, dbName, s3bucket, s3
 	dbHost = getVariable(text, "DB_HOST")
 	s3bucket = getVariable(text, "S3BUCKET")
 	s3url = getVariable(text, "S3URL")
-	s3access = getVariable(text, "S3_ACCESS_KEY")
-	s3secret = getVariable(text, "S3_SECRET_KEY")
-	s3region = getVariable(text, "S3_REGION")
 
-	return dbPass, dbUser, dbHost, dbName, s3bucket, s3url, s3access, s3secret, s3region, nil
+	return dbPass, dbUser, dbHost, dbName, s3bucket, s3url, nil
 }
 
 // getVariable get the variables from the ENV file, right now we are assuming they look like this:
