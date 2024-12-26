@@ -121,7 +121,7 @@ func (m *UserModel) Exists(id int) (exist, admin, user, guest, disabled bool, er
 
 	var u User
 
-	err := m.DB.QueryRow(stmt, id).Scan(&u.ID, &u.Admin, &u.User, &u.Guest, &u.Disabled)
+	err := m.DB.QueryRow(stmt, id).Scan(&u.ID, &u.Admin, &u.Guest, &u.User, &u.Disabled)
 
 	if err != nil {
 		// If the query returns no rows, then row.Scan() will return a
@@ -142,6 +142,7 @@ func (m *UserModel) Exists(id int) (exist, admin, user, guest, disabled bool, er
 	}
 
 	if u.Guest {
+
 		return true, false, false, true, false, nil
 	}
 
