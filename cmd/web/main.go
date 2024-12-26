@@ -49,22 +49,14 @@ func main() {
 		AddSource: true,
 	}))
 
-	//Get the DB Details from the .env file, !TODO: change to OS Vars in prod
-	dbPass, dbUser, dbHost, dbName, s3BucketName, s3UrlName, err := readFileEnvs(".env")
+	dbPass, dbUser, dbHost, dbName, s3BucketName, s3UrlName, s3region, err := readFileEnvs(".env")
 	if err != nil {
 		logger.Error(err.Error())
 		os.Exit(1)
 	}
 
 	//AWS Login
-	cfg, err := config.LoadDefaultConfig(context.TODO(),
-		config.WithSharedCredentialsFiles(
-			[]string{"data/credentials"},
-		),
-		config.WithSharedConfigFiles(
-			[]string{"data/config"},
-		),
-	)
+	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(s3region))
 
 	if err != nil {
 		log.Fatalf("unable to load SDK config, %v", err)
@@ -157,16 +149,16 @@ func openDB(dsn string) (*sql.DB, error) {
 }
 
 // readFileEnvs pull the sensitive data details from the .ENV file that we are using for Docker init
-func readFileEnvs(fileName string) (dbPass, dbUser, dbHost, dbName, s3bucket, s3url string, err error) {
+func readFileEnvs(fileName string) (dbPass, dbUser, dbHost, dbName, s3bucket, s3url, s3region string, err error) {
 
 	file, err := os.Open(fileName)
 	if err != nil {
-		return "", "", "", "", "", "", err
+		return "", "", "", "", "", "", "", err
 	}
 
 	data, err := io.ReadAll(file)
 	if err != nil {
-		return "", "", "", "", "", "", err
+		return "", "", "", "", "", "", "", err
 	}
 
 	text := string(data)
@@ -177,8 +169,9 @@ func readFileEnvs(fileName string) (dbPass, dbUser, dbHost, dbName, s3bucket, s3
 	dbHost = getVariable(text, "DB_HOST")
 	s3bucket = getVariable(text, "S3BUCKET")
 	s3url = getVariable(text, "S3URL")
+	s3region = getVariable(text, "S3_REGION")
 
-	return dbPass, dbUser, dbHost, dbName, s3bucket, s3url, nil
+	return dbPass, dbUser, dbHost, dbName, s3bucket, s3url, s3region, nil
 }
 
 // getVariable get the variables from the ENV file, right now we are assuming they look like this:
