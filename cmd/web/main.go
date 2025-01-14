@@ -37,6 +37,7 @@ type application struct {
 	S3Client       *s3.Client
 	S3Bucket       string
 	S3Url          string
+	PresignClient  *s3.PresignClient
 }
 
 // MaxUploadSize defines the largest file that can be uploaded in the system
@@ -49,7 +50,7 @@ func main() {
 		AddSource: true,
 	}))
 
-	dbPass, dbUser, dbHost, dbName, dbPort, s3BucketName, s3UrlName, s3credentials, s3config,
+	dbPass, dbUser, dbHost, dbName, dbPort, s3BucketName, s3UrlName, s3credentials, s3config, s3region,
 		err := readFileEnvs(".env")
 	if err != nil {
 		logger.Error(err.Error())
@@ -63,6 +64,7 @@ func main() {
 		config.WithSharedConfigFiles(
 			[]string{s3config},
 		),
+		config.WithRegion(s3region),
 	)
 
 	if err != nil {
@@ -108,6 +110,7 @@ func main() {
 		S3Client:       awsClient,
 		S3Bucket:       s3BucketName,
 		S3Url:          s3UrlName,
+		PresignClient:  s3.NewPresignClient(awsClient),
 	}
 
 	tlsConfig := &tls.Config{
@@ -158,16 +161,16 @@ func openDB(dsn string) (*sql.DB, error) {
 
 // readFileEnvs pull the sensitive data details from the .ENV file that we are using for Docker init
 func readFileEnvs(fileName string) (dbPass, dbUser, dbHost, dbName, dbPort, s3bucket, s3url,
-	s3credentials, s3config string, err error) {
+	s3credentials, s3config, s3region string, err error) {
 
 	file, err := os.Open(fileName)
 	if err != nil {
-		return "", "", "", "", "", "", "", "", "", err
+		return "", "", "", "", "", "", "", "", "", "", err
 	}
 
 	data, err := io.ReadAll(file)
 	if err != nil {
-		return "", "", "", "", "", "", "", "", "", err
+		return "", "", "", "", "", "", "", "", "", "", err
 	}
 
 	text := string(data)
@@ -181,8 +184,9 @@ func readFileEnvs(fileName string) (dbPass, dbUser, dbHost, dbName, dbPort, s3bu
 	s3url = getVariable(text, "S3URL")
 	s3credentials = getVariable(text, "S3_CREDENTIALS")
 	s3config = getVariable(text, "S3_CONFIG")
+	s3region = getVariable(text, "S3_REGION")
 
-	return dbPass, dbUser, dbHost, dbName, dbPort, s3bucket, s3url, s3credentials, s3config, nil
+	return dbPass, dbUser, dbHost, dbName, dbPort, s3bucket, s3url, s3credentials, s3config, s3region, nil
 }
 
 // getVariable get the variables from the ENV file, right now we are assuming they look like this:

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	//aws
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -67,4 +68,47 @@ func (app *application) ListObjects(ctx context.Context, bucketName string) ([]t
 		}
 	}
 	return objects, err
+}
+
+func (app *application) DeleteObject(ctx context.Context, bucketName, objectName string) error {
+	return nil
+}
+
+func (app *application) putPresignURL(objectName, objectType string) string {
+
+	presignedUrl, err := app.PresignClient.PresignPutObject(context.Background(),
+		&s3.PutObjectInput{
+			Bucket:      aws.String(app.S3Bucket + "/images/"),
+			Key:         aws.String(objectName),
+			ContentType: aws.String(objectType),
+		},
+		s3.WithPresignExpires(time.Minute*15))
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return presignedUrl.URL
+}
+
+func (app *application) updateObjectACL(bucketName, objectKey, acl string) error {
+
+	/*
+		If we try to do this too soon it won't work/will throw a CORS error or permission denied, this is because
+		the file isn't actually fully written to s3 and replicated so we need to wait a few seconds until we try to add
+		permissions/set the ACL
+	*/
+	time.Sleep(2 * time.Second)
+
+	_, err := app.S3Client.PutObjectAcl(context.TODO(), &s3.PutObjectAclInput{
+		Bucket: aws.String(bucketName),
+		Key:    aws.String("images/" + objectKey),
+		ACL:    types.ObjectCannedACL(acl),
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -36,7 +36,7 @@ type userContactForm struct {
 	Message string `form:"message"`
 }
 
-func (app *application) userSignup(w http.ResponseWriter, r *http.Request) {
+func (app *application) getUserSignup(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
 
 	data.Form = userSignupForm{}
@@ -44,7 +44,7 @@ func (app *application) userSignup(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, http.StatusOK, "signup.gohtml", data)
 }
 
-func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
+func (app *application) postUserSignup(w http.ResponseWriter, r *http.Request) {
 	var form userSignupForm
 
 	if err := app.decodePostForm(r, &form); err != nil {
@@ -105,13 +105,13 @@ func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }
 
-func (app *application) userLogin(w http.ResponseWriter, r *http.Request) {
+func (app *application) getUserLogin(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
 	data.Form = userLoginForm{}
 	app.render(w, r, http.StatusOK, "login.gohtml", data)
 }
 
-func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
+func (app *application) postUserLogin(w http.ResponseWriter, r *http.Request) {
 	// Decode the form data into the userLoginForm struct.
 	var form userLoginForm
 
@@ -172,7 +172,7 @@ func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func (app *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
+func (app *application) postUserLogout(w http.ResponseWriter, r *http.Request) {
 	// Use the RenewToken() method on the current session to change the session
 	// ID again.
 	if err := app.sessionManager.RenewToken(r.Context()); err != nil {
@@ -188,7 +188,7 @@ func (app *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
 	// logged out.
 	app.sessionManager.Put(r.Context(), "flash", "You've been logged out successfully!")
 
-	// Redirect the user to the application home page.
+	// Redirect the user to the application Home page.
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
@@ -218,7 +218,7 @@ func (app *application) getAllUsers(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (app *application) editUser(w http.ResponseWriter, r *http.Request) {
+func (app *application) getEditUser(w http.ResponseWriter, r *http.Request) {
 	if !app.isAdmin(r) {
 		data := app.newTemplateData(r)
 		app.render(w, r, http.StatusOK, "home.gohtml", data)
@@ -244,7 +244,7 @@ func (app *application) editUser(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (app *application) editUserPost(w http.ResponseWriter, r *http.Request) {
+func (app *application) postEditUser(w http.ResponseWriter, r *http.Request) {
 	if !app.isAdmin(r) {
 		data := app.newTemplateData(r)
 		app.render(w, r, http.StatusOK, "home.gohtml", data)
@@ -273,7 +273,7 @@ func (app *application) editUserPost(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, http.StatusOK, "user_edit.gohtml", data)
 }
 
-func (app *application) deleteUser(w http.ResponseWriter, r *http.Request) {
+func (app *application) postDeleteUser(w http.ResponseWriter, r *http.Request) {
 	if !app.isAdmin(r) {
 		data := app.newTemplateData(r)
 		app.render(w, r, http.StatusOK, "home.gohtml", data)
@@ -293,7 +293,7 @@ func (app *application) deleteUser(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/users/", http.StatusSeeOther)
 }
 
-func (app *application) updateUser(w http.ResponseWriter, r *http.Request) {
+func (app *application) getUpdateUser(w http.ResponseWriter, r *http.Request) {
 	if !app.isAuthenticated(r) {
 		data := app.newTemplateData(r)
 		app.render(w, r, http.StatusOK, "home.gohtml", data)
@@ -321,7 +321,7 @@ func (app *application) updateUser(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, http.StatusOK, "user_password.gohtml", data)
 }
 
-func (app *application) updateUserPost(w http.ResponseWriter, r *http.Request) {
+func (app *application) postUpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	var form userSignupForm
 
@@ -345,14 +345,14 @@ func (app *application) updateUserPost(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, http.StatusOK, "user_password.gohtml", data)
 }
 
-func (app *application) Contact(w http.ResponseWriter, r *http.Request) {
+func (app *application) getContact(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
 	data.Form = userContactForm{}
 
 	app.render(w, r, http.StatusOK, "about.gohtml", data)
 }
 
-func (app *application) ContactPost(w http.ResponseWriter, r *http.Request) {
+func (app *application) postContact(w http.ResponseWriter, r *http.Request) {
 
 	var form userContactForm
 
@@ -375,7 +375,7 @@ func (app *application) ContactPost(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, http.StatusOK, "about.gohtml", data)
 }
 
-func (app *application) EmailVerification(w http.ResponseWriter, r *http.Request) {
+func (app *application) getEmailVerification(w http.ResponseWriter, r *http.Request) {
 	verify := r.PathValue("verify")
 
 	passed, err := app.users.CheckVerification(verify)
@@ -391,7 +391,7 @@ func (app *application) EmailVerification(w http.ResponseWriter, r *http.Request
 
 }
 
-func (app *application) PasswordResetPost(w http.ResponseWriter, r *http.Request) {
+func (app *application) postPasswordReset(w http.ResponseWriter, r *http.Request) {
 	var form userLoginForm
 
 	if err := app.decodePostForm(r, &form); err != nil {
@@ -429,7 +429,7 @@ func (app *application) PasswordResetPost(w http.ResponseWriter, r *http.Request
 
 }
 
-func (app *application) PasswordResetValidate(w http.ResponseWriter, r *http.Request) {
+func (app *application) getPasswordResetValidate(w http.ResponseWriter, r *http.Request) {
 
 	verify := r.PathValue("verify")
 
@@ -446,7 +446,7 @@ func (app *application) PasswordResetValidate(w http.ResponseWriter, r *http.Req
 	}
 }
 
-func (app *application) PasswordResetAfterVerified(w http.ResponseWriter, r *http.Request) {
+func (app *application) postPasswordResetAfterVerified(w http.ResponseWriter, r *http.Request) {
 	verify := r.PathValue("verify")
 	var form userLoginForm
 

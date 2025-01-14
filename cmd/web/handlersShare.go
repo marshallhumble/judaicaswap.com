@@ -23,11 +23,16 @@ type shareCreateForm struct {
 	Owner               int       `form:"owner"`
 	Email               string    `form:"email"`
 	Files               []os.File `form:"uploadFile"`
-	Picture1            string    `form:"picture1"`
-	Picture2            string    `form:"picture2"`
-	Picture3            string    `form:"picture3"`
-	Picture4            string    `form:"picture4"`
-	Picture5            string    `form:"picture5"`
+	Picture1            string    `form:"picture0"`
+	Picture2            string    `form:"picture1"`
+	Picture3            string    `form:"picture2"`
+	Picture4            string    `form:"picture3"`
+	Picture5            string    `form:"picture4"`
+	PutString1          string    `form:"putString0"`
+	PutString2          string    `form:"putString1"`
+	PutString3          string    `form:"putString2"`
+	PutString4          string    `form:"putString3"`
+	PutString5          string    `form:"putString4"`
 	ShipsIntl           bool      `form:"shipsIntl"`
 	PayShip             bool      `form:"payShip"`
 	ProdURL             string    `form:"prodUrl"`
@@ -36,9 +41,9 @@ type shareCreateForm struct {
 	validator.Validator `form:"-"`
 }
 
-// home Want to show all the listings but make people login to see specifics,
+// getHome Want to show all the listings but make people login to see specifics,
 // so no ability to take any action here other than view
-func (app *application) home(w http.ResponseWriter, r *http.Request) {
+func (app *application) getHome(w http.ResponseWriter, r *http.Request) {
 
 	shares, err := app.Share.GetAll()
 	if err != nil {
@@ -54,9 +59,9 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// shareView look at a specific item, pull it from the DB, should have to authenticate
+// getShareView look at a specific item, pull it from the DB, should have to authenticate
 // to get access.
-func (app *application) shareView(w http.ResponseWriter, r *http.Request) {
+func (app *application) getShareView(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil || id < 1 {
@@ -80,9 +85,9 @@ func (app *application) shareView(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, http.StatusOK, "view.gohtml", data)
 }
 
-// sendMail we want to get data to send an email without exposing the email address of the owner
+// postSendMail we want to get data to send an email without exposing the email address of the owner
 // gather id and sender's email from URL and session
-func (app *application) sendMail(w http.ResponseWriter, r *http.Request) {
+func (app *application) postSendMail(w http.ResponseWriter, r *http.Request) {
 	if !app.isAuthenticated(r) {
 		data := app.newTemplateData(r)
 		app.render(w, r, http.StatusOK, "home.gohtml", data)
@@ -108,7 +113,7 @@ func (app *application) sendMail(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/items/view/%d", id), http.StatusSeeOther)
 }
 
-func (app *application) shareCreate(w http.ResponseWriter, r *http.Request) {
+func (app *application) getShareCreate(w http.ResponseWriter, r *http.Request) {
 	if !app.isAuthenticated(r) {
 		data := app.newTemplateData(r)
 		app.render(w, r, http.StatusOK, "home.gohtml", data)
@@ -122,7 +127,7 @@ func (app *application) shareCreate(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, http.StatusOK, "create.gohtml", data)
 }
 
-func (app *application) shareCreatePost(w http.ResponseWriter, r *http.Request) {
+func (app *application) postShareCreate(w http.ResponseWriter, r *http.Request) {
 
 	if !app.isAuthenticated(r) {
 		data := app.newTemplateData(r)
@@ -135,51 +140,6 @@ func (app *application) shareCreatePost(w http.ResponseWriter, r *http.Request) 
 	if err := app.decodePostForm(r, &form); err != nil {
 		app.clientError(w, http.StatusBadRequest)
 		return
-	}
-
-	multipartFormData := r.MultipartForm
-
-	for key, file := range multipartFormData.File["uploadFile"] {
-
-		if key < 5 && file.Filename != "" {
-
-			ext := filepath.Ext(file.Filename)
-			nTime := fileDate(time.Now())
-			id := app.sessionManager.GetInt(r.Context(), "authenticatedUserID")
-
-			file.Filename = strings.ReplaceAll(strconv.Itoa(id)+strings.ToLower(strings.TrimSuffix(file.Filename,
-				filepath.Ext(file.Filename))), " ", "-") + "-" + fmt.Sprintf("%v", nTime) + ext
-
-			dst, err := safeopen.CreateAt("./ui/static/SharePics", file.Filename)
-			if err != nil {
-				app.clientError(w, http.StatusBadRequest)
-				return
-			}
-
-			f, _ := file.Open()
-			io.Copy(dst, f)
-
-			if err := app.uploadFileToS3(file.Filename); err != nil {
-				app.serverError(w, r, err)
-			}
-
-			fullName := app.S3Url + file.Filename
-
-			switch key {
-			case 0:
-				form.Picture1 = fullName
-			case 1:
-				form.Picture2 = fullName
-			case 2:
-				form.Picture3 = fullName
-			case 3:
-				form.Picture4 = fullName
-			case 4:
-				form.Picture5 = fullName
-			default:
-				form.Picture1 = fullName
-			}
-		}
 	}
 
 	form.CheckField(validator.NotBlank(form.Description),
@@ -195,10 +155,20 @@ func (app *application) shareCreatePost(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	/*
+		PictureSlice := []string{form.Picture1, form.Picture2, form.Picture3, form.Picture4, form.Picture5}
+
+		for _, Picture := range PictureSlice {
+			if len(Picture) != 0 {
+				if err := app.updateObjectACL(app.S3Bucket, Picture, "public-read"); err != nil {
+					fmt.Println(err.Error())
+				}
+			}
+		}
+	*/
+
 	owner := app.sessionManager.GetInt(r.Context(), "authenticatedUserID")
 	email := app.sessionManager.GetString(r.Context(), "authenticatedUserEmail")
-
-	//bucketName, keyName string, fileBody interface{})
 
 	//Insert(owner int, email, title, description, produrl, picture1, picture2, picture3, picture4,
 	//	picture5 string, ships, payship, avail bool, expires int) (int, error)
@@ -213,7 +183,7 @@ func (app *application) shareCreatePost(w http.ResponseWriter, r *http.Request) 
 	http.Redirect(w, r, fmt.Sprintf("/items/view/%d", id), http.StatusSeeOther)
 }
 
-func (app *application) shareEdit(w http.ResponseWriter, r *http.Request) {
+func (app *application) getShareEdit(w http.ResponseWriter, r *http.Request) {
 
 	if !app.isAuthenticated(r) {
 		data := app.newTemplateData(r)
@@ -242,7 +212,7 @@ func (app *application) shareEdit(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func (app *application) shareEditPost(w http.ResponseWriter, r *http.Request) {
+func (app *application) postShareEdit(w http.ResponseWriter, r *http.Request) {
 	if !app.isAuthenticated(r) {
 		data := app.newTemplateData(r)
 		app.render(w, r, http.StatusOK, "home.gohtml", data)
@@ -317,7 +287,7 @@ func (app *application) shareEditPost(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/items/view/%d", id), http.StatusSeeOther)
 }
 
-func (app *application) shareDelete(w http.ResponseWriter, r *http.Request) {
+func (app *application) getShareDelete(w http.ResponseWriter, r *http.Request) {
 	if !app.isAuthenticated(r) {
 		data := app.newTemplateData(r)
 		app.render(w, r, http.StatusOK, "home.gohtml", data)

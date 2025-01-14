@@ -12,19 +12,15 @@ import (
 func commonHeaders(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Security-Policy",
-			"default-src 'self'; script-src 'self'; "+
-				"script-src-elem https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js 'self' "+
-				"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css; style-src 'self'; "+
-				"style-src-elem https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css 'self' "+
-				"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js; img-src 'self' "+
-				"https://judaicaswap.s3.us-east-1.amazonaws.com/; font-src fonts.googleapis.com; "+
-				"require-trusted-types-for 'script'; object-src 'none';")
+			"base-uri 'self'; style-src https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css;"+
+				" script-src 'self' 'sha256-aND34iD5ZJkzL/4S3wUsWOTnUl1MDZdxWS0yFKe8e0I=' "+
+				"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js ;"+
+				" img-src 'self' https://judaicaswap.s3.us-east-1.amazonaws.com/; font-src fonts.googleapis.com;")
 
 		w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		w.Header().Set("X-Frame-Options", "deny")
 		w.Header().Set("X-XSS-Protection", "0")
-		w.Header().Set("Clear-Site-Data", "*")
 		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 
 		next.ServeHTTP(w, r)
@@ -173,3 +169,25 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+/*
+func (app *application) rateLimit(next http.Handler) http.Handler {
+	// Initialize a new rate limiter which allows an average of 2 requests per second,
+	// with a maximum of 4 requests in a single ‘burst’.
+	limiter := rate.NewLimiter(2, 4)
+
+	// The function we are returning is a closure, which 'closes over' the limiter
+	// variable.
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Call limiter.Allow() to see if the request is permitted, and if it's not,
+		// then we call the rateLimitExceededResponse() helper to return a 429 Too Many
+		// Requests response (we will create this helper in a minute).
+		if !limiter.Allow() {
+			app.rateLimitExceededResponse(w, r)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+*/

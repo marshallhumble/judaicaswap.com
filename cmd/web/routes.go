@@ -29,42 +29,48 @@ func (app *application) routes() http.Handler {
 	//Make Alice Admin Only route
 	admin := dynamic.Append(app.requireAdmin)
 
+	//Make an API route
+	api := alice.New(app.sessionManager.LoadAndSave)
+
 	//Default route
-	mux.Handle("GET /{$}", dynamic.ThenFunc(app.home))
+	mux.Handle("GET /{$}", dynamic.ThenFunc(app.getHome))
 
 	//Dynamic View Item (not protected)
-	mux.Handle("GET /items/view/{id}", dynamic.ThenFunc(app.shareView))
+	mux.Handle("GET /items/view/{id}", dynamic.ThenFunc(app.getShareView))
 
-	//Protected File Create/View Routes
-	mux.Handle("GET /items/create", protected.ThenFunc(app.shareCreate))
-	mux.Handle("POST /items/create", protected.ThenFunc(app.shareCreatePost))
-	mux.Handle("GET /items/edit/{id}", protected.ThenFunc(app.shareEdit))
-	mux.Handle("POST /items/edit/{id}", protected.ThenFunc(app.shareEditPost))
-	mux.Handle("GET /items/delete/{id}", protected.ThenFunc(app.shareDelete))
-	mux.Handle("POST /items/sendEmail/{id}", protected.ThenFunc(app.sendMail))
+	//Dynamic User Contact Form (not protected)
+	mux.Handle("GET /contact", dynamic.ThenFunc(app.getContact))
+	mux.Handle("POST /contact", dynamic.ThenFunc(app.postContact))
+
+	//Dynamic User Sign-up/Login/Logout Verify Email, Password Reset
+	mux.Handle("GET /user/signup", dynamic.ThenFunc(app.getUserSignup))
+	mux.Handle("POST /user/signup", dynamic.ThenFunc(app.postUserSignup))
+	mux.Handle("GET /user/login", dynamic.ThenFunc(app.getUserLogin))
+	mux.Handle("POST /user/login", dynamic.ThenFunc(app.postUserLogin))
+	mux.Handle("POST /user/logout", dynamic.ThenFunc(app.postUserLogout))
+	mux.Handle("GET /verify/{verify}", dynamic.ThenFunc(app.getEmailVerification))
+	mux.Handle("POST /user/reset", dynamic.ThenFunc(app.postPasswordReset))
+	mux.Handle("GET /user/resetPassword/{verify}", dynamic.ThenFunc(app.getPasswordResetValidate))
+	mux.Handle("POST /user/resetPassword/{verify}", dynamic.ThenFunc(app.postPasswordResetAfterVerified))
 
 	//Protected User Routes
 	mux.Handle("GET /users/", admin.ThenFunc(app.getAllUsers))
-	mux.Handle("GET /user/edit/{id}", protected.ThenFunc(app.editUser))
-	mux.Handle("POST /user/edit/{id}", protected.ThenFunc(app.editUserPost))
-	mux.Handle("POST /user/delete/{id}", protected.ThenFunc(app.deleteUser))
-	mux.Handle("GET /user/update/", protected.ThenFunc(app.updateUser))
-	mux.Handle("POST /user/update/", protected.ThenFunc(app.updateUserPost))
+	mux.Handle("GET /user/edit/{id}", protected.ThenFunc(app.getEditUser))
+	mux.Handle("POST /user/edit/{id}", protected.ThenFunc(app.postEditUser))
+	mux.Handle("POST /user/delete/{id}", protected.ThenFunc(app.postDeleteUser))
+	mux.Handle("GET /user/update/", protected.ThenFunc(app.getUpdateUser))
+	mux.Handle("POST /user/update/", protected.ThenFunc(app.postUpdateUser))
 
-	//Dynamic User Contact Form (not protected)
-	mux.Handle("GET /contact", dynamic.ThenFunc(app.Contact))
-	mux.Handle("POST /contact", dynamic.ThenFunc(app.ContactPost))
+	//Protected File Create/View Routes
+	mux.Handle("GET /items/create", protected.ThenFunc(app.getShareCreate))
+	mux.Handle("POST /items/create", protected.ThenFunc(app.postShareCreate))
+	mux.Handle("GET /items/edit/{id}", protected.ThenFunc(app.getShareEdit))
+	mux.Handle("POST /items/edit/{id}", protected.ThenFunc(app.postShareEdit))
+	mux.Handle("GET /items/delete/{id}", protected.ThenFunc(app.getShareDelete))
+	mux.Handle("POST /items/sendEmail/{id}", protected.ThenFunc(app.postSendMail))
 
-	//User Sign-up/Login/Logout Verify Email, Password Reset
-	mux.Handle("GET /user/signup", dynamic.ThenFunc(app.userSignup))
-	mux.Handle("POST /user/signup", dynamic.ThenFunc(app.userSignupPost))
-	mux.Handle("GET /user/login", dynamic.ThenFunc(app.userLogin))
-	mux.Handle("POST /user/login", dynamic.ThenFunc(app.userLoginPost))
-	mux.Handle("POST /user/logout", dynamic.ThenFunc(app.userLogoutPost))
-	mux.Handle("GET /verify/{verify}", dynamic.ThenFunc(app.EmailVerification))
-	mux.Handle("POST /user/reset", dynamic.ThenFunc(app.PasswordResetPost))
-	mux.Handle("GET /user/resetPassword/{verify}", dynamic.ThenFunc(app.PasswordResetValidate))
-	mux.Handle("POST /user/resetPassword/{verify}", dynamic.ThenFunc(app.PasswordResetAfterVerified))
+	//API Calls
+	mux.Handle("GET /api/v1/signed/{ext}/{file}", api.ThenFunc(app.getSignedUploadURL))
 
 	standard := alice.New(app.recoverPanic, app.logRequest, commonHeaders)
 	return standard.Then(mux)

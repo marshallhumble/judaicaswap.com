@@ -1,7 +1,9 @@
 {{ define "title" }}Upload a New File{{ end }} {{ define "main" }}
-<form enctype="multipart/form-data" action="/items/create" method="POST">
+<form id="createform" enctype="multipart/form-data" action="/items/create" method="POST" xmlns="">
   <!-- Include the CSRF token -->
+
   <input type="hidden" name="csrf_token" value="{{ .CSRFToken }}" />
+  <script src="/static/js/uploadImg.js" type="text/javascript"></script>
   <div>
     <label class="form-label">Item Name:</label>
     {{ with .Form.FieldErrors.itemName }}
@@ -37,7 +39,7 @@
   <div>
     <label for="payShip">
       Willing to pay shipping?:
-      <select id="shipsIntl" name="payShip">
+      <select id="payShip" name="payShip">
         <option value="True" >Yes</option>
         <option value="False" selected>No</option>
       </select>
@@ -56,15 +58,20 @@
   </div>
   <div class="mt-2">
     Upload images: <b>Limit 5, <i>jpg or png only.</i></b>
+    <input type="hidden" id="picture0" name="picture0" value="">
+    <input type="hidden" id="picture1" name="picture1" value="">
+    <input type="hidden" id="picture2" name="picture2" value="">
+    <input type="hidden" id="picture3" name="picture3" value="">
+    <input type="hidden" id="picture4" name="picture4" value="">
     <br />
     {{ with .Form.FieldErrors.uploadFile }}
     <label class="error">{{ . }}</label>
     {{ end }}
     <div class="mt-1">
-    <input type="file" class="btn btn-secondary" name="uploadFile" multiple />
+    <input type="file" accept="image/jpeg image/png image/jp2" class="btn btn-secondary" name="fileInput" multiple />
     </div>
     <div class="mt-2, mb-5">
-    <input type="submit" class="btn btn-primary" value="Create Listing" />
+      <button id="submitForm" class="btn btn-primary">Create Item</button>
     </div>
   </div>
 </form>
