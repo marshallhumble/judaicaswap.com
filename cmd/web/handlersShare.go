@@ -3,15 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/google/safeopen"
-	"io"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strconv"
-	"strings"
-	"time"
-
 	//Internal
 	"judaicaswap.com/internal/models"
 	"judaicaswap.com/internal/validator"
@@ -217,50 +211,6 @@ func (app *application) postShareEdit(w http.ResponseWriter, r *http.Request) {
 	if err := app.decodePostForm(r, &form); err != nil {
 		app.clientError(w, http.StatusBadRequest)
 		return
-	}
-
-	multipartFormData := r.MultipartForm
-
-	for key, file := range multipartFormData.File["uploadFile"] {
-
-		if key < 5 && file.Filename != "" {
-			ext := filepath.Ext(file.Filename)
-			nTime := fileDate(time.Now())
-			id := app.sessionManager.GetInt(r.Context(), "authenticatedUserID")
-
-			file.Filename = strings.ReplaceAll(strconv.Itoa(id)+strings.ToLower(strings.TrimSuffix(file.Filename,
-				filepath.Ext(file.Filename))), " ", "-") + "-" + fmt.Sprintf("%v", nTime) + ext
-
-			dst, err := safeopen.CreateAt("./ui/static/SharePics", file.Filename)
-			if err != nil {
-				app.clientError(w, http.StatusBadRequest)
-				return
-			}
-
-			f, _ := file.Open()
-			io.Copy(dst, f)
-
-			if err := app.uploadFileToS3(file.Filename); err != nil {
-				app.serverError(w, r, err)
-			}
-
-			fullName := app.S3Url + file.Filename
-
-			switch key {
-			case 0:
-				form.Picture1 = fullName
-			case 1:
-				form.Picture2 = fullName
-			case 2:
-				form.Picture3 = fullName
-			case 3:
-				form.Picture4 = fullName
-			case 4:
-				form.Picture5 = fullName
-			default:
-				form.Picture1 = fullName
-			}
-		}
 	}
 
 	//UpdateShare(id int, title, description, produrl, picture1, picture2, picture3, picture4,
