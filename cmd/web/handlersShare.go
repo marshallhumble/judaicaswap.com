@@ -155,18 +155,6 @@ func (app *application) postShareCreate(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	/*
-		PictureSlice := []string{form.Picture1, form.Picture2, form.Picture3, form.Picture4, form.Picture5}
-
-		for _, Picture := range PictureSlice {
-			if len(Picture) != 0 {
-				if err := app.updateObjectACL(app.S3Bucket, Picture, "public-read"); err != nil {
-					fmt.Println(err.Error())
-				}
-			}
-		}
-	*/
-
 	owner := app.sessionManager.GetInt(r.Context(), "authenticatedUserID")
 	email := app.sessionManager.GetString(r.Context(), "authenticatedUserEmail")
 
@@ -302,4 +290,7 @@ func (app *application) getShareDelete(w http.ResponseWriter, r *http.Request) {
 	if err := app.Share.Remove(id); err != nil {
 		app.serverError(w, r, err)
 	}
+
+	app.sessionManager.Put(r.Context(), "flash", "Item successfully deleted!")
+	http.Redirect(w, r, fmt.Sprintf("/"), http.StatusSeeOther)
 }

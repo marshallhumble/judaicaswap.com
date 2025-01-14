@@ -66,7 +66,7 @@ func (app *application) routes() http.Handler {
 	mux.Handle("POST /items/create", protected.ThenFunc(app.postShareCreate))
 	mux.Handle("GET /items/edit/{id}", protected.ThenFunc(app.getShareEdit))
 	mux.Handle("POST /items/edit/{id}", protected.ThenFunc(app.postShareEdit))
-	mux.Handle("GET /items/delete/{id}", protected.ThenFunc(app.getShareDelete))
+	mux.Handle("POST /items/delete/{id}", protected.ThenFunc(app.getShareDelete))
 	mux.Handle("POST /items/sendEmail/{id}", protected.ThenFunc(app.postSendMail))
 
 	//API Calls
