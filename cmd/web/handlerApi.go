@@ -6,6 +6,11 @@ import (
 )
 
 func (app *application) getSignedUploadURL(w http.ResponseWriter, r *http.Request) {
+	if r.Host != "localhost" {
+		http.NotFound(w, r)
+		return
+	}
+
 	fileString := r.PathValue("file")
 	fileType := r.FormValue("ext")
 
