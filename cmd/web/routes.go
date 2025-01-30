@@ -71,6 +71,7 @@ func (app *application) routes() http.Handler {
 
 	//API Calls
 	mux.Handle("GET /api/v1/signed/{ext}/{file}", api.ThenFunc(app.getSignedUploadURL))
+	mux.Handle("GET /api/v1/host", api.ThenFunc(app.hostname))
 
 	standard := alice.New(app.recoverPanic, app.logRequest, commonHeaders)
 	return standard.Then(mux)

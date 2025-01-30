@@ -25,3 +25,11 @@ func (app *application) getSignedUploadURL(w http.ResponseWriter, r *http.Reques
 	w.Write(js)
 
 }
+
+func (app *application) hostname(w http.ResponseWriter, r *http.Request) {
+	name := r.Host
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(name))
+
+}
