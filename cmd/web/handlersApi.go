@@ -6,7 +6,7 @@ import (
 )
 
 func (app *application) getSignedUploadURL(w http.ResponseWriter, r *http.Request) {
-	if r.Host != "localhost" || r.Host != "judaicaswap.com" {
+	if r.Host != "judaicaswap.com" {
 		http.NotFound(w, r)
 		return
 	}
