@@ -7,7 +7,7 @@ require (
 	github.com/alexedwards/scs/v2 v2.8.0
 	github.com/aws/aws-sdk-go-v2 v1.36.0
 	github.com/aws/aws-sdk-go-v2/config v1.29.4
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.75.2
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.75.3
 	github.com/go-playground/form/v4 v4.2.1
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/justinas/alice v1.2.0
