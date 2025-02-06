@@ -14,6 +14,7 @@ func commonHeaders(next http.Handler) http.Handler {
 		w.Header().Set("Content-Security-Policy",
 			"base-uri 'self'; style-src https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css;"+
 				" script-src 'self' 'sha256-aND34iD5ZJkzL/4S3wUsWOTnUl1MDZdxWS0yFKe8e0I=' "+
+				" https://challenges.cloudflare.com/turnstile/v0/api.js "+
 				"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js ;"+
 				" img-src 'self' https://judaicaswap.s3.us-east-1.amazonaws.com/; font-src fonts.googleapis.com;")
 

@@ -132,6 +132,7 @@ go.work.sum
 # env file
 .env
 .env_local
+.env.prod
 /ui/static/SharePics/*.*
 /tls/*.*
 

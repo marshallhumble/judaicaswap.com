@@ -24,6 +24,7 @@ type templateData struct {
 	IsAdmin         bool
 	IsGuest         bool
 	CSRFToken       string
+	CFSite          string
 }
 
 func humanDate(t time.Time) string {

@@ -3,6 +3,7 @@
     <form enctype="multipart/form-data" action="/contact" method="POST">
         <!-- Include the CSRF token -->
         <input type="hidden" class="form-label" name="csrf_token" value="{{ .CSRFToken }}" />
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
         <div>
     <h2>About:</h2>
         <p>
@@ -27,7 +28,12 @@
         <textarea id="message" class="form-control" name="message" autocomplete="message-to-send" rows=4 cols=50>{{.Form.Message }} </textarea>
     </label>
             <br>
-        <input type="submit" class="btn btn-primary" value="Send" />
+            <div class="checkbox mb-3">
+                <!-- The following line controls and configures the Turnstile widget. -->
+                <div class="cf-turnstile" data-sitekey={{.CFSite}} data-theme="light"></div>
+                <!-- end. -->
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
         </div>
         </form>
     <br>
@@ -35,7 +41,8 @@
         <h2>Privacy Policy</h2>
 
         <p>JudaicaSwap is committed to protecting your privacy.
-            This Privacy Policy describes how we collect, use, and safeguard your personal information when you visit our website, https://www.judaicaswap.com.
+            This Privacy Policy describes how we collect, use, and safeguard your personal information when you visit
+            our website, https://www.judaicaswap.com.
 
     <h3>1. Information We Collect</h3>
     <p>
@@ -64,19 +71,24 @@
 
     <h3>4. Data Retention</h3>
     <p>
-        We retain your personal information only as long as necessary to fulfill the purposes described in this Privacy Policy or as required by law. When your information is no longer needed, we will securely delete it.
+        We retain your personal information in order to provide services. When your information is no longer needed,
+        or when requested, we will securely delete it.
     </p>
 
     <h3>5. Your Rights</h3>
     <p>
-        You may have certain rights regarding your personal data, including the right to access, correct, or request deletion of your information. To exercise these rights, please contact us using the details provided below.
+        You may have certain rights regarding your personal data, including the right to access, correct, or request
+        deletion of your information. To exercise these rights, please contact us using the details provided below.
     </p>
 
     <h3>6. Changes to This Privacy Policy</h3>
     <p>
-        We may update this Privacy Policy periodically. Any changes will be posted on this page with an updated “Last Updated” date. Your continued use of the Site signifies your acceptance of any changes.
+        We may update this Privacy Policy periodically. Any changes will be posted on this page with an updated
+        “Last Updated” date. Your continued use of the Site signifies your acceptance of any changes.
     </p>
     <h3>7. Contact Us</h3>
     <p>If you have any questions or concerns about this Privacy Policy, please use the form above to contact us.</p>
+    <br>
+    <div class="mb-5"></div>
 
 {{end}}

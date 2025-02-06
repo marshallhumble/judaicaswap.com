@@ -347,6 +347,8 @@ func (app *application) postUpdateUser(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) getContact(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
+	// DEV - data.CFSite = "1x00000000000000000000AA"
+	data.CFSite = app.CFTurnSite
 	data.Form = userContactForm{}
 
 	app.render(w, r, http.StatusOK, "about.gohtml", data)
