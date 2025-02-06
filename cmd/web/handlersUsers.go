@@ -374,7 +374,7 @@ func (app *application) postContact(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
 	data.Form = form
 	app.sessionManager.Put(r.Context(), "flash", "Message Sent!")
-	app.render(w, r, http.StatusOK, "about.gohtml", data)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func (app *application) getEmailVerification(w http.ResponseWriter, r *http.Request) {
