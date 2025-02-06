@@ -2,6 +2,7 @@
   <form action='/user/signup' method='POST' novalidate>
   <!-- Include the CSRF token -->
   <input type="hidden" name="csrf_token" value="{{ .CSRFToken }}" />
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
   <div>
     <label class="form-lable">Name:</label>
     {{ with .Form.FieldErrors.name }}
@@ -69,8 +70,13 @@
       <input type="text" class="form-control" name="question3" value="{{ .Form.Question3 }}" />
     </label>
   </div>
+    <div class="checkbox mt-3">
+      <!-- The following line controls and configures the Turnstile widget. -->
+      <div class="cf-turnstile" data-sitekey={{.CFSite}} data-theme="light"></div>
+      <!-- end. -->
+    </div>
   <div class="mt-3">
-    <input type="submit" class="btn btn-primary" value="Signup" />
+    <button type="submit" class="btn btn-primary">Signup</button>
   </div>
 </form>
 {{ end }}
