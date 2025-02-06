@@ -38,7 +38,8 @@ type userContactForm struct {
 
 func (app *application) getUserSignup(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
-
+	//DEV - data.CFSite = "1x00000000000000000000AA"
+	data.CFSite = app.CFTurnSite
 	data.Form = userSignupForm{}
 
 	app.render(w, r, http.StatusOK, "signup.gohtml", data)
