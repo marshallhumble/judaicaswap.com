@@ -12,7 +12,7 @@ require (
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/justinas/alice v1.2.0
 	github.com/justinas/nosurf v1.1.1
-	golang.org/x/crypto v0.32.0
+	golang.org/x/crypto v0.33.0
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 )
 
