@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	//Internal
@@ -31,14 +32,18 @@ type userLoginForm struct {
 }
 
 type userContactForm struct {
-	Name    string `form:"name"`
-	Email   string `form:"email"`
-	Message string `form:"message"`
+	Name                string `form:"name"`
+	Email               string `form:"email"`
+	Message             string `form:"message"`
+	cfToken             string `form:"cf-turnstile-response"`
+	validator.Validator `form:"-"`
 }
 
 func (app *application) getUserSignup(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
-	//DEV - data.CFSite = "1x00000000000000000000AA"
+	//DEV:
+	//data.CFSite = "1x00000000000000000000AA"
+	//PROD:
 	data.CFSite = app.CFTurnSite
 	data.Form = userSignupForm{}
 
@@ -348,7 +353,9 @@ func (app *application) postUpdateUser(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) getContact(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
-	// DEV - data.CFSite = "1x00000000000000000000AA"
+	//DEV:
+	//data.CFSite = "1x00000000000000000000AA"
+	//PROD:
 	data.CFSite = app.CFTurnSite
 	data.Form = userContactForm{}
 
@@ -364,6 +371,20 @@ func (app *application) postContact(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	form.CheckField(validator.NotBlank(form.Name), "name", "This field cannot be blank")
+	form.CheckField(validator.NotBlank(form.Email), "email", "This field cannot be blank")
+	form.CheckField(validator.Matches(form.Email, validator.EmailRX),
+		"email", "This field must be a valid email address")
+	form.CheckField(validator.NotBlank(form.Message), "message", "This field cannot be blank")
+
+	if !form.Valid() {
+		data := app.newTemplateData(r)
+		data.Form = form
+		app.sessionManager.Put(r.Context(), "flash", "Error try again")
+		app.render(w, r, http.StatusUnprocessableEntity, "about.gohtml", data)
+		return
+	}
+
 	if err := app.config.ContactFormEmail(form.Name, form.Email, form.Message); err != nil {
 		app.clientError(w, http.StatusBadRequest)
 		data := app.newTemplateData(r)
@@ -371,6 +392,8 @@ func (app *application) postContact(w http.ResponseWriter, r *http.Request) {
 		app.sessionManager.Put(r.Context(), "flash", "Error try again")
 		app.render(w, r, http.StatusOK, "about.gohtml", data)
 	}
+
+	fmt.Println(form.cfToken)
 
 	data := app.newTemplateData(r)
 	data.Form = form
