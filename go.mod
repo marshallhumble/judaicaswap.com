@@ -9,7 +9,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.29.9
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.78.1
 	github.com/go-playground/form/v4 v4.2.1
-	github.com/go-sql-driver/mysql v1.9.0
+	github.com/go-sql-driver/mysql v1.9.1
 	github.com/justinas/alice v1.2.0
 	github.com/justinas/nosurf v1.1.1
 	golang.org/x/crypto v0.36.0
