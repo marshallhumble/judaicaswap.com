@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             //get the pre-signed URL using the new filename
             const s3URL = await fetch(`/api/v1/signed/${ext}/${fileName}`)
-                .then(response => response.json());
+                .then(response => response.json()).catch(error => console.log(error));
 
             // post the image directly to the s3 bucket with a PUT request
             const response = await fetch(s3URL, {
