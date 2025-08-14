@@ -1,6 +1,6 @@
 module judaicaswap.com
 
-go 1.24.4
+go 1.25.0
 
 require (
 	github.com/alexedwards/scs/mysqlstore v0.0.0-20250212122300-421ef1d8611c
