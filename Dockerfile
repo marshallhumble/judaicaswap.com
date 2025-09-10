@@ -1,4 +1,4 @@
-ARG GO_VERSION=1.24.4
+ARG GO_VERSION=1.25.1
 
 # First stage: build the executable.
 FROM golang:${GO_VERSION}-alpine AS build
