@@ -5,7 +5,7 @@ go 1.25.1
 require (
 	github.com/alexedwards/scs/mysqlstore v0.0.0-20250417082927-ab20b3feb5e9
 	github.com/alexedwards/scs/v2 v2.9.0
-	github.com/aws/aws-sdk-go-v2 v1.40.1
+	github.com/aws/aws-sdk-go-v2 v1.41.0
 	github.com/aws/aws-sdk-go-v2/config v1.32.2
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.93.0
 	github.com/go-playground/form/v4 v4.3.0
