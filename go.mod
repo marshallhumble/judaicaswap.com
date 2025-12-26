@@ -6,19 +6,6 @@ require (
 	github.com/alexedwards/scs/mysqlstore v0.0.0-20250417082927-ab20b3feb5e9
 	github.com/alexedwards/scs/v2 v2.9.0
 	github.com/aws/aws-sdk-go-v2 v1.41.0
-	github.com/aws/aws-sdk-go-v2/config v1.32.2
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.95.0
-	github.com/go-playground/form/v4 v4.3.0
-	github.com/go-sql-driver/mysql v1.9.3
-	github.com/justinas/alice v1.2.0
-	github.com/justinas/nosurf v1.2.0
-	golang.org/x/crypto v0.46.0
-	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
-)
-
-require (
-	filippo.io/edwards25519 v1.1.0 // indirect
-	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.4 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.19.2 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.14 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.16 // indirect
